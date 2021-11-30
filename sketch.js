@@ -53,6 +53,7 @@ let res_permafrost;
 // GLOBAL VARIABLES
 // ----------------
 let currentYear;
+let currentInfoBox;
 
 // -------
 // PRELOAD
@@ -136,6 +137,7 @@ function setup() {
   // -------
   reservoirOcean = new Reservoir(
     "Ocean Reservoir",
+    "Ocean Reservoir Description Blablabla",
     res_ocean,
     canvasWidth * 0.8,
     canvasHeight * 0.25,
@@ -144,6 +146,7 @@ function setup() {
 
   reservoirTerrestial = new Reservoir(
     "Terrestial Reservoir",
+    "Terrestial Reservoir Description Blablabla",
     res_bio_avrg,
     canvasWidth * 0.55,
     canvasHeight * 0.75,
@@ -152,11 +155,14 @@ function setup() {
 
   reservoirFossil = new Reservoir(
     "Fossil Reservoir",
+    "Fossil Reservoir Description Blablabla",
     res_fossil_avrg,
     canvasWidth * 0.15,
     canvasHeight * 0.5,
     0.3
   );
+
+  currentInfoBox = new InfoBox("ANY", "Description");
 }
 // ----
 // DRAW
@@ -173,39 +179,55 @@ function draw() {
   // OUTPUT
   // ------
   fill(255);
-  drawText(150,canvasHeight * 0.9, year[currentYear]);
+  drawText(150, canvasHeight * 0.9, year[currentYear]);
 
   reservoirOcean.display();
   reservoirTerrestial.display();
   reservoirFossil.display();
+  currentInfoBox.display();
 }
 
 // -------
 // CLASSES
 // -------
 class Reservoir {
-  constructor(name, data, positionX, positionY, scale) {
+  constructor(name, description, data, positionX, positionY, scale) {
     this.name = name;
+    this.description = description;
     this.data = data;
     this.x = positionX;
     this.y = positionY;
     this.diameter = data[currentYear];
     this.scale = scale;
+    this.infoBox = new InfoBox(this.name, this.description);
   }
 
   display() {
     this.diameter = this.data[currentYear];
-    this.diameter = (this.diameter * this.scale);
-    fill(255,255,255,50);
-    //noStroke();
+    this.diameter = this.diameter * this.scale;
+    fill(255, 255, 255, 50);
     circle(this.x, this.y, this.diameter);
+
+    if (this.name != "Fossil Reservoir") {
+      push();
+      stroke(255, 0, 0);
+      noFill();
+      circle(this.x, this.y, min(this.data) * this.scale);
+      pop();
+    }
+
     fill(255);
-    drawText(this.x, this.y, this.name + "\n \n" + round(this.data[currentYear],0) + " gtC/y");
+    drawText(
+      this.x,
+      this.y,
+      this.name + "\n \n" + round(this.data[currentYear], 0) + " gtC/y"
+    );
   }
 
   clicked() {
     if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
-      //DO SOMETHING
+      currentInfoBox.title = this.name;
+      currentInfoBox.description = this.description;
     }
   }
 }
@@ -223,7 +245,23 @@ class Atmosphere {
 
 class Flux {}
 
-class InfoBox {}
+class InfoBox {
+  constructor(title, description) {
+    this.title = title;
+    this.description = description;
+  }
+
+  changeText(title, description) {
+    this.title = title;
+    this.description = description;
+  }
+
+  display() {
+    fill(255);
+    drawText(canvasWidth * 0.8, canvasHeight * 0.8, this.title);
+    drawText(canvasWidth * 0.8, canvasHeight * 0.82, this.description);
+  }
+}
 
 // ---------
 // FUNCTIONS
@@ -237,6 +275,8 @@ function drawText(x, y, textVal) {
 // Check if one of the listed objects is clicked
 function mousePressed() {
   reservoirOcean.clicked();
+  reservoirTerrestial.clicked();
+  reservoirFossil.clicked();
 }
 
 // Show data in console
