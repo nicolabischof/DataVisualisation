@@ -58,8 +58,8 @@ let currentYear;
 // PRELOAD
 // -------
 function preload() {
-  baseData = loadTable("data/carbonCycleData19592020.csv", "csv", "header");
-  //baseData = loadTable("data/carbonCycleData17512100.csv", "csv", "header");
+  //baseData = loadTable("data/carbonCycleData19592020.csv", "csv", "header");
+  baseData = loadTable("data/carbonCycleData17512100.csv", "csv", "header");
 
   fontRegular = loadFont("fonts/Montserrat-Regular.ttf");
   fontBold = loadFont("fonts/Montserrat-Bold.ttf");
@@ -105,7 +105,7 @@ function setup() {
   res_soil_avrg = baseData.getColumn("res_soil_avrg");
   res_veg_min = baseData.getColumn("res_veg_min");
   res_veg_max = baseData.getColumn("res_veg_max");
-  res_ver_avrg = baseData.getColumn("res_ver_avrg");
+  res_veg_avrg = baseData.getColumn("res_ver_avrg");
   res_bio_min = baseData.getColumn("res_bio_min");
   res_bio_max = baseData.getColumn("res_bio_max");
   res_bio_avrg = baseData.getColumn("res_bio_avrg");
@@ -125,7 +125,7 @@ function setup() {
     baseData.getRows().length - 1,
     baseData.getRows().length - 1
   );
-  year_slider.position(150, 200);
+  year_slider.position(150, canvasHeight * 0.92);
   year_slider.size(1000);
 
   textFont(fontBold);
@@ -135,17 +135,34 @@ function setup() {
   // CLASSES
   // -------
   reservoirOcean = new Reservoir(
-    "res_atmosphere",
-    res_atmosphere,
-    1000,
-    canvasHeight / 2
+    "Ocean Reservoir",
+    res_ocean,
+    canvasWidth * 0.8,
+    canvasHeight * 0.25,
+    0.04
+  );
+
+  reservoirTerrestial = new Reservoir(
+    "Terrestial Reservoir",
+    res_bio_avrg,
+    canvasWidth * 0.55,
+    canvasHeight * 0.75,
+    0.3
+  );
+
+  reservoirFossil = new Reservoir(
+    "Fossil Reservoir",
+    res_fossil_avrg,
+    canvasWidth * 0.15,
+    canvasHeight * 0.5,
+    0.3
   );
 }
 // ----
 // DRAW
 // ----
 function draw() {
-  background(0, 0, 0);
+  background(0);
 
   // -----
   // INPUT
@@ -156,29 +173,34 @@ function draw() {
   // OUTPUT
   // ------
   fill(255);
-  drawText(150, 150, year[currentYear]);
+  drawText(150,canvasHeight * 0.9, year[currentYear]);
 
   reservoirOcean.display();
+  reservoirTerrestial.display();
+  reservoirFossil.display();
 }
 
 // -------
 // CLASSES
 // -------
 class Reservoir {
-  constructor(name, data, positionX, positionY) {
+  constructor(name, data, positionX, positionY, scale) {
     this.name = name;
     this.data = data;
     this.x = positionX;
     this.y = positionY;
     this.diameter = data[currentYear];
+    this.scale = scale;
   }
 
   display() {
     this.diameter = this.data[currentYear];
-    fill(255);
+    this.diameter = (this.diameter * this.scale);
+    fill(255,255,255,50);
+    //noStroke();
     circle(this.x, this.y, this.diameter);
-    fill(0);
-    drawText(this.x, this.y, this.diameter + " gtC/y");
+    fill(255);
+    drawText(this.x, this.y, this.name + "\n \n" + round(this.data[currentYear],0) + " gtC/y");
   }
 
   clicked() {
