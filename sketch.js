@@ -42,7 +42,7 @@ let res_soil_max;
 let res_soil_avrg;
 let res_veg_min;
 let res_veg_max;
-let res_ver_avrg;
+let res_veg_avrg;
 let res_bio_min;
 let res_bio_max;
 let res_bio_avrg;
@@ -106,7 +106,7 @@ function setup() {
   res_soil_avrg = baseData.getColumn("res_soil_avrg");
   res_veg_min = baseData.getColumn("res_veg_min");
   res_veg_max = baseData.getColumn("res_veg_max");
-  res_veg_avrg = baseData.getColumn("res_ver_avrg");
+  res_veg_avrg = baseData.getColumn("res_veg_avrg");
   res_bio_min = baseData.getColumn("res_bio_min");
   res_bio_max = baseData.getColumn("res_bio_max");
   res_bio_avrg = baseData.getColumn("res_bio_avrg");
@@ -316,7 +316,7 @@ function logExistingData() {
       console.log(res_soil_avrg[i]);
       console.log(res_veg_min[i]);
       console.log(res_veg_max[i]);
-      console.log(res_ver_avrg[i]);
+      console.log(res_veg_avrg[i]);
       console.log(res_bio_min[i]);
       console.log(res_bio_max[i]);
       console.log(res_bio_avrg[i]);
