@@ -141,9 +141,9 @@ function setup() {
     ppm,
     temperature,
     [348, 100, 81, 48, 21],
-    canvasWidth * 0.8,
-    canvasHeight * 0.85,
-    0.4
+    canvasWidth * 0.5,
+    canvasHeight * 0.5,
+    0.7
   );
 
   reservoirOcean = new Reservoir(
@@ -236,7 +236,7 @@ class Atmosphere {
   }
 
   display() {
-    this.drawScales(radians(-45));
+    this.drawScales(radians(45));
     this.diameter = this.carbonData[currentYear];
     this.diameter = (this.diameter * this.scale);
     fill(100);
@@ -266,8 +266,8 @@ class Atmosphere {
       radius = radius + 8;
       let transX = radius * sin(angle);
       let transY = radius * cos(angle);
-      drawText(transX, transY, this.ppmData[i] + " ppm", 12, -angle);
-      drawText(-transX, -transY, "+" + this.temperatureData[i] + " °C", 12, -angle);
+      drawText(transX, transY, this.ppmData[index] + " ppm", 12, -angle);
+      drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, -angle);
     }
     pop();
   }
