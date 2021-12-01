@@ -138,6 +138,7 @@ function setup() {
   // -------
   reservoirAtmosphere = new Atmosphere(
     "Atmosphere",
+    "this is the atmosphere, which shows we're fucked.",
     res_atmosphere,
     ppm,
     temperature,
@@ -248,8 +249,9 @@ class Reservoir {
 }
 
 class Atmosphere {
-  constructor(name, carbonData, ppmData, temperatureData, scaleIndizes, positionX, positionY, scale) {
+  constructor(name, description, carbonData, ppmData, temperatureData, scaleIndizes, positionX, positionY, scale) {
     this.name = name;
+    this.description = description;
     this.carbonData = carbonData;
     this.ppmData = ppmData;
     this.temperatureData = temperatureData;
@@ -264,8 +266,11 @@ class Atmosphere {
     this.diameter = this.carbonData[currentYear];
     this.diameter = (this.diameter * this.scale);
     fill(100);
-    //noStroke();
+    noStroke();
     circle(this.x, this.y, this.diameter);
+
+    this.drawMinDiameter();
+
     fill(255);
     drawText(this.x, this.y, this.name + "\n \n" + round(this.carbonData[currentYear], 0) + " gtC");
   }
@@ -294,6 +299,21 @@ class Atmosphere {
       drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, -angle);
     }
     pop();
+  }
+
+  drawMinDiameter() {
+    push();
+    stroke(255, 0, 0);
+    noFill();
+    circle(this.x, this.y, min(this.carbonData) * this.scale);
+    pop();
+  }
+
+  clicked() {
+    if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
+      currentInfoBox.title = this.name;
+      currentInfoBox.description = this.description;
+    }
   }
 }
 
@@ -336,6 +356,7 @@ function mousePressed() {
   reservoirOcean.clicked();
   reservoirTerrestial.clicked();
   reservoirFossil.clicked();
+  reservoirAtmosphere.clicked();
 }
 
 // Show data in console
