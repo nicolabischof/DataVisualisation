@@ -176,6 +176,18 @@ function setup() {
   );
 
   currentInfoBox = new InfoBox("ANY", "Description");
+
+  titleBox = new TitleBox(
+    "Carbon Cycle",
+    "slow",
+    "fast",
+    "slow",
+    canvasWidth * 0.1,
+    canvasHeight * 0.1,
+    20,
+    20,
+    2
+  );
 }
 // ----
 // DRAW
@@ -199,6 +211,7 @@ function draw() {
   reservoirTerrestial.display();
   reservoirFossil.display();
   currentInfoBox.display();
+  titleBox.display();
 }
 
 // -------
@@ -295,8 +308,8 @@ class Atmosphere {
       radius = radius + 8;
       let transX = radius * sin(angle);
       let transY = radius * cos(angle);
-      drawText(transX, transY, this.ppmData[index] + " ppm", 12, -angle);
-      drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, -angle);
+      drawText(transX, transY, this.ppmData[index] + " ppm", 12, 255, -angle);
+      drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, 255, -angle);
     }
     pop();
   }
@@ -337,16 +350,116 @@ class InfoBox {
   }
 }
 
+class TitleBox {
+  constructor(title, option1, option2, selected, positionX, positionY, marginTB, marginLR, scale) {
+    this.title = title;
+    this.option1 = option1;
+    this.option2 = option2;
+    this.selected = selected;
+    this.x = positionX;
+    this.y = positionY;
+    this.marginTB = marginTB;
+    this.marginLR = marginLR;
+    this.scale = scale;
+
+    // calculate bounding box size
+    this.textsize = fontsize * this.scale;
+    this.width = textWidth(this.title) * this.scale + 2 * this.marginLR;
+    this.height = 2 * (this.textsize + 2 * this.marginTB);
+  }
+
+  select(option) {
+    if (option == this.option1) {
+      this.selected = this.option1;
+      return 1;
+    } else if (option == this.option2) {
+      this.selected = this.option2;
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  display() {
+    // calculate helpful coordinate
+    let transY = this.y + this.height * 0.5;
+
+    // style boxes
+    noFill();
+    stroke(255);
+    strokeWeight(3);
+
+    // draw boxes
+    rect(
+      this.x,
+      this.y,
+      this.width,
+      this.height,
+      50
+    );
+    rect(
+      this.x,
+      transY,
+      this.width * 0.5,
+      this.height * 0.5,
+      0, 0, 0, 50
+    );
+    rect(
+      this.x + this.width * 0.5,
+      transY, this.width * 0.5,
+      this.height * 0.5,
+      0, 0, 50, 0
+    );
+
+    // style text
+    noStroke();
+    fill(255);
+
+    // draw text
+    drawText(
+      this.x + this.width * 0.5,
+      this.y + this.height * 0.2,
+      this.title,
+      this.textsize
+    );
+
+    this.drawOption(
+      this.x + this.width * 0.25,
+      this.y + this.height * 0.7,
+      this.option1,
+    );
+
+    this.drawOption(
+      this.x + this.width * 0.75,
+      this.y + this.height * 0.7,
+      this.option2,
+    );
+  }
+
+  drawOption(x, y, option) {
+    let c = (option == this.selected ? color(255, 232, 49) : 255);
+    drawText(
+      x,
+      y,
+      option,
+      this.textsize,
+      c
+    );
+  }
+}
+
 // ---------
 // FUNCTIONS
 // ---------
 // Draws Text at a specific location
-function drawText(x, y, textVal, size = fontsize, rotation = 0) {
+function drawText(x, y, textVal, size = fontsize, color = 255, rotation = 0) {
   push();
   translate(x, y);
   rotate(rotation);
   textSize(size);
   textAlign(CENTER, CENTER);
+  noStroke()
+  fill(color);
   text(textVal, 0, 0);
   pop();
 }
