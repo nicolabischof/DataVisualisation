@@ -66,12 +66,12 @@ function preload() {
   fontRegular = loadFont("fonts/OpenSans-Regular.ttf");
   fontBold = loadFont("fonts/OpenSans-Bold.ttf");
   fontThin = loadFont("fonts/OpenSans-Light.ttf");
-  /*
-  fontRegular = loadFont("fonts/Montserrat-Regular.ttf");
-  fontBold = loadFont("fonts/Montserrat-Bold.ttf");
-  fontThin = loadFont("fonts/Montserrat-Thin.ttf");
-  */
+
+  //   fontRegular = loadFont("fonts/Montserrat-Regular.ttf");
+  //   fontBold = loadFont("fonts/Montserrat-Bold.ttf");
+  //   fontThin = loadFont("fonts/Montserrat-Thin.ttf");
 }
+
 // -----
 // SETUP
 // -----
@@ -203,6 +203,7 @@ function setup() {
     150
   );
 }
+
 // ----
 // DRAW
 // ----
