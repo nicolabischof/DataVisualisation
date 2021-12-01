@@ -63,9 +63,14 @@ function preload() {
   //baseData = loadTable("data/carbonCycleData19592020.csv", "csv", "header");
   baseData = loadTable("data/carbonCycleData17512100.csv", "csv", "header");
 
+  fontRegular = loadFont("fonts/OpenSans-Regular.ttf");
+  fontBold = loadFont("fonts/OpenSans-Bold.ttf");
+  fontThin = loadFont("fonts/OpenSans-Light.ttf");
+  /*
   fontRegular = loadFont("fonts/Montserrat-Regular.ttf");
   fontBold = loadFont("fonts/Montserrat-Bold.ttf");
   fontThin = loadFont("fonts/Montserrat-Thin.ttf");
+  */
 }
 // -----
 // SETUP
@@ -188,6 +193,15 @@ function setup() {
     20,
     2
   );
+
+  timeline = new Timeline(
+    year,
+    fossil_emission_total,
+    canvasWidth * 0.03,
+    canvasHeight - 500,
+    canvasWidth * 0.4,
+    150
+  );
 }
 // ----
 // DRAW
@@ -212,6 +226,7 @@ function draw() {
   reservoirFossil.display();
   currentInfoBox.display();
   titleBox.display();
+  timeline.display();
 }
 
 // -------
@@ -308,8 +323,8 @@ class Atmosphere {
       radius = radius + 8;
       let transX = radius * sin(angle);
       let transY = radius * cos(angle);
-      drawText(transX, transY, this.ppmData[index] + " ppm", 12, 255, -angle);
-      drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, 255, -angle);
+      drawText(transX, transY, this.ppmData[index] + " ppm", 12, 255, CENTER, -angle);
+      drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, 255, CENTER, -angle);
     }
     pop();
   }
@@ -448,16 +463,85 @@ class TitleBox {
   }
 }
 
+class Timeline {
+  constructor(dates, values, positionX, positionY, width, height) {
+    this.dates = dates;
+    this.values = values;
+    this.x = positionX;
+    this.y = positionY;
+    this.width = width;
+    this.height = height;
+
+    this.barWidth = 1;
+    this.selectedBarWidth = 3;
+    this.padding = 5;
+
+    this.maxEmissionValue = max(values);
+    this.textSpace = 130 + this.padding;
+    this.memberSpace = (this.width - this.textSpace - this.selectedBarWidth) / this.dates.length;
+  }
+
+  display() {
+    // noFill();
+    // stroke(255);
+    // rect(this.x, this.y, this.width, -this.height);
+
+    this.drawChart();
+    this.drawLabel();
+  }
+
+  drawChart() {
+    noStroke();
+
+    for (let i = 0; i < this.dates.length; i++) {
+      fill(i == currentYear ? color(255, 232, 49) : 255);
+      let barHeight = map(this.values[i], 0, this.maxEmissionValue, 0, this.height);
+      rect(
+        this.x + (this.dates.length - i) * this.memberSpace,
+        this.y,
+        i == currentYear ? this.selectedBarWidth : this.barWidth,
+        -barHeight
+      );
+    }
+  }
+
+  drawLabel() {
+    let year = this.dates[currentYear];
+    let textX = this.x + this.width + this.padding - this.textSpace;
+    let smallText = fontsize * 0.48;
+    let bigText = fontsize * 1.6;
+
+    textFont(fontThin);
+
+    drawText(
+      textX,
+      this.y - bigText / 2 - 1,
+      year,
+      bigText,
+      color(255, 232, 49),
+      LEFT
+    );
+    drawText(
+      textX,
+      this.y - (bigText),
+      "Fossil Emissions",
+      smallText,
+      color(255, 232, 49),
+      LEFT
+    );
+  }
+}
+
 // ---------
 // FUNCTIONS
 // ---------
 // Draws Text at a specific location
-function drawText(x, y, textVal, size = fontsize, color = 255, rotation = 0) {
+function drawText(x, y, textVal, size = fontsize, color = 255, alignment = CENTER, rotation = 0) {
   push();
   translate(x, y);
   rotate(rotation);
   textSize(size);
-  textAlign(CENTER, CENTER);
+  textAlign(alignment, CENTER);
   noStroke()
   fill(color);
   text(textVal, 0, 0);
