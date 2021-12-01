@@ -1,6 +1,7 @@
 // ---------------
 // SETUP VARIABLES
 // ---------------
+let canvas;
 let canvasWidth = 3840;
 let canvasHeight = 2160;
 let font;
@@ -119,7 +120,7 @@ function setup() {
   // -----
   currentYear = baseData.getRows().length - 1;
 
-  createCanvas(canvasWidth, canvasHeight);
+  canvas = createCanvas(canvasWidth, canvasHeight);
 
   year_slider = createSlider(
     0,
@@ -135,6 +136,17 @@ function setup() {
   // -------
   // CLASSES
   // -------
+  reservoirAtmosphere = new Atmosphere(
+    "Atmosphere",
+    res_atmosphere,
+    ppm,
+    temperature,
+    [348, 100, 81, 48, 21],
+    canvasWidth * 0.5,
+    canvasHeight * 0.5,
+    0.7
+  );
+
   reservoirOcean = new Reservoir(
     "Ocean Reservoir",
     "Ocean Reservoir Description Blablabla",
@@ -181,6 +193,7 @@ function draw() {
   fill(255);
   drawText(150, canvasHeight * 0.9, year[currentYear]);
 
+  reservoirAtmosphere.display();
   reservoirOcean.display();
   reservoirTerrestial.display();
   reservoirFossil.display();
@@ -206,6 +219,7 @@ class Reservoir {
     this.diameter = this.data[currentYear];
     this.diameter = this.diameter * this.scale;
     fill(255, 255, 255, 50);
+    noStroke();
     circle(this.x, this.y, this.diameter);
 
     if (this.name != "Fossil Reservoir") {
@@ -222,6 +236,7 @@ class Reservoir {
       this.y,
       this.name + "\n \n" + round(this.data[currentYear], 0) + " gtC/y"
     );
+
   }
 
   clicked() {
@@ -233,14 +248,53 @@ class Reservoir {
 }
 
 class Atmosphere {
-  constructor(name, data, positionX, positionY) {
+  constructor(name, carbonData, ppmData, temperatureData, scaleIndizes, positionX, positionY, scale) {
     this.name = name;
-    this.data = data;
-    this.positionX = positionX;
-    this.positionY = positionY;
+    this.carbonData = carbonData;
+    this.ppmData = ppmData;
+    this.temperatureData = temperatureData;
+    this.scaleIndizes = scaleIndizes;
+    this.x = positionX;
+    this.y = positionY;
+    this.scale = scale;
   }
 
-  display() {}
+  display() {
+    this.drawScales(radians(45));
+    this.diameter = this.carbonData[currentYear];
+    this.diameter = (this.diameter * this.scale);
+    fill(100);
+    //noStroke();
+    circle(this.x, this.y, this.diameter);
+    fill(255);
+    drawText(this.x, this.y, this.name + "\n \n" + round(this.carbonData[currentYear], 0) + " gtC");
+  }
+
+  drawScales(angle) {
+    push();
+    translate(this.x, this.y);
+    push();
+    canvas.drawingContext.setLineDash([6, 6]);
+    noFill();
+    stroke(255);
+    strokeWeight(1);
+    for (let i = 0; i < this.scaleIndizes.length; i++) {
+      let index = this.scaleIndizes[i];
+      circle(0, 0, this.carbonData[index] * this.scale);
+    }
+    pop();
+
+    for (let i = 0; i < this.scaleIndizes.length; i++) {
+      let index = this.scaleIndizes[i];
+      let radius = this.carbonData[index] * this.scale * 0.5;
+      radius = radius + 8;
+      let transX = radius * sin(angle);
+      let transY = radius * cos(angle);
+      drawText(transX, transY, this.ppmData[index] + " ppm", 12, -angle);
+      drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, -angle);
+    }
+    pop();
+  }
 }
 
 class Flux {}
@@ -267,9 +321,14 @@ class InfoBox {
 // FUNCTIONS
 // ---------
 // Draws Text at a specific location
-function drawText(x, y, textVal) {
+function drawText(x, y, textVal, size = fontsize, rotation = 0) {
+  push();
+  translate(x, y);
+  rotate(rotation);
+  textSize(size);
   textAlign(CENTER, CENTER);
-  text(textVal, x, y);
+  text(textVal, 0, 0);
+  pop();
 }
 
 // Check if one of the listed objects is clicked
