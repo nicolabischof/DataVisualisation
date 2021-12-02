@@ -741,6 +741,22 @@ class Timeline {
     this.drawLabel();
   }
 
+  clicked() {
+    if (this.rectIntersect()) {
+      let pos = (this.x + this.width - this.textSpace - this.selectedBarWidth) - mouseX;
+      let index = Math.floor(pos / this.memberSpace);
+      currentYear = index;
+    }
+  }
+
+  rectIntersect() {
+    return (
+    mouseX >= this.x && mouseX <= this.x + (this.width - this.textSpace)
+    &&
+    mouseY >= (this.y - this.height) && mouseY <= this.y
+    );
+  }
+
   drawChart() {
     noStroke();
 
@@ -819,6 +835,7 @@ function mousePressed() {
   reservoirTerrestial.clicked();
   reservoirFossil.clicked();
   reservoirAtmosphere.clicked();
+  timeline.clicked();
 }
 
 // Show data in console
