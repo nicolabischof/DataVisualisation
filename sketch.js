@@ -59,9 +59,9 @@ let currentSliderValue;
 let oldSliderValue;
 let FluxPointList = [];
 
-// -------
+// -----------------------------------------------------------------------
 // PRELOAD
-// -------
+// -----------------------------------------------------------------------
 function preload() {
   //baseData = loadTable("data/carbonCycleData19592020.csv", "csv", "header");
   baseData = loadTable("data/carbonCycleData17512100.csv", "csv", "header");
@@ -75,9 +75,9 @@ function preload() {
   //   fontThin = loadFont("fonts/Montserrat-Thin.ttf");
 }
 
-// -----
+// -----------------------------------------------------------------------
 // SETUP
-// -----
+// -----------------------------------------------------------------------
 function setup() {
   // ----
   // DATA
@@ -126,10 +126,9 @@ function setup() {
   // -----
   // TABLE
   // -----
-  currentYear = baseData.getRows().length - 1;
-
   canvas = createCanvas(canvasWidth, canvasHeight);
 
+  // SLIDER
   year_slider = createSlider(
     0,
     baseData.getRows().length - 1,
@@ -144,6 +143,10 @@ function setup() {
   currentSliderValue = year_slider.value();
   oldSliderValue = year_slider.value();
 
+  // Sets the defaul current Year
+  currentYear = baseData.getRows().length - 1;
+
+  // TEXT STYLE
   textFont(fontBold);
   textSize(fontsize);
 
@@ -213,184 +216,29 @@ function setup() {
   );
 }
 
-// ----
+// -----------------------------------------------------------------------
 // DRAW
-// ----
+// -----------------------------------------------------------------------
 function draw() {
   background(0);
-
   // -----
   // INPUT
   // -----
-  let numberFactor = 5;
-  let randomFactor = 100;
+  //Slider
   currentSliderValue = year_slider.value();
   if (oldSliderValue != currentSliderValue) {
     currentYear = year_slider.value();
     if (oldSliderValue > currentSliderValue) {
       // --> FOWARDS
-      // FOSSIL TO ATMOSPHERE
-      if (fossil_emission_total[currentYear] <= 0.5) {
-        //Draw for small Values
-        FluxPointList.push(
-          new FluxPoint(
-            reservoirFossil.x,
-            reservoirFossil.y,
-            reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-            reservoirAtmosphere.y + random(-randomFactor, randomFactor)
-          )
-        );
-      } else {
-        //Draw for Big Numbers
-        for (
-          let i = 0;
-          i <= fossil_emission_total[currentYear] * numberFactor;
-          i++
-        ) {
-          FluxPointList.push(
-            new FluxPoint(
-              reservoirFossil.x,
-              reservoirFossil.y,
-              reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-              reservoirAtmosphere.y + random(-randomFactor, randomFactor)
-            )
-          );
-        }
-      }
-      // -------------------
-      // ATMOSPHERE TO OCEAN
-      if (ocean_sink[currentYear] <= 1.3) {
-        //Draw for small Values
-        FluxPointList.push(
-          new FluxPoint(
-            reservoirAtmosphere.x,
-            reservoirAtmosphere.y,
-            reservoirOcean.x + random(-randomFactor, randomFactor),
-            reservoirOcean.y + random(-randomFactor, randomFactor)
-          )
-        );
-      } else {
-        //Draw for Big Numbers
-        for (let i = 0; i <= ocean_sink[currentYear] * numberFactor; i++) {
-          FluxPointList.push(
-            new FluxPoint(
-              reservoirAtmosphere.x ,
-              reservoirAtmosphere.y,
-              reservoirOcean.x + random(-randomFactor, randomFactor),
-              reservoirOcean.y  + random(-randomFactor, randomFactor)
-            )
-          );
-        }
-      }
-      // -------------------
-      // ATMOSPHERE TO BIOSPHERE
-      if (bio_sink[currentYear] <= 1.0) {
-        //Draw for small Values
-        FluxPointList.push(
-          new FluxPoint(
-            reservoirAtmosphere.x,
-            reservoirAtmosphere.y ,
-            reservoirTerrestial.x + random(-randomFactor, randomFactor),
-            reservoirTerrestial.y+ random(-randomFactor, randomFactor)
-          )
-        );
-      } else {
-        //Draw for Big Numbers
-        for (let i = 0; i <= bio_sink[currentYear] * numberFactor; i++) {
-          FluxPointList.push(
-            new FluxPoint(
-              reservoirAtmosphere.x ,
-              reservoirAtmosphere.y ,
-              reservoirTerrestial.x+ random(-randomFactor, randomFactor),
-              reservoirTerrestial.y+ random(-randomFactor, randomFactor)
-            )
-          );
-        }
-      }
-      // -------------------
+      addFowardFluxPoints();
     } else {
       // BACKWARDS <--
-      // ATMOSPHERE TO FOSSIL 
-      if (fossil_emission_total[currentYear] <= 1.0) {
-        //Draw for small Values
-        FluxPointList.push(
-          new FluxPoint(
-            reservoirAtmosphere.x ,
-            reservoirAtmosphere.y ,
-            reservoirFossil.x + random(-randomFactor, randomFactor),
-            reservoirFossil.y+ random(-randomFactor, randomFactor)
-          )
-        );
-      } else {
-        for (
-          let i = 0;
-          i <= fossil_emission_total[currentYear] * numberFactor;
-          i++
-        ) {
-          FluxPointList.push(
-            new FluxPoint(
-              reservoirAtmosphere.x ,
-              reservoirAtmosphere.y ,
-              reservoirFossil.x+ random(-randomFactor+50, randomFactor-50),
-              reservoirFossil.y+ random(-randomFactor+50, randomFactor-50)
-            )
-          );
-        }
-      }
-      //--------------------
-      // OCEAN TO ATMOSPHERE
-      if (ocean_sink[currentYear] <= 1.3) {
-        //Draw for small Values
-        FluxPointList.push(
-          new FluxPoint(
-            reservoirOcean.x ,
-            reservoirOcean.y ,
-            reservoirAtmosphere.x+ random(-randomFactor, randomFactor),
-            reservoirAtmosphere.y+ random(-randomFactor, randomFactor)
-          )
-        );
-      } else {
-        //Draw for Big Numbers
-        for (let i = 0; i <= ocean_sink[currentYear] * numberFactor; i++) {
-          FluxPointList.push(
-            new FluxPoint(
-              reservoirOcean.x,
-              reservoirOcean.y ,
-              reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-              reservoirAtmosphere.y + random(-randomFactor, randomFactor)
-            )
-          );
-        }
-      }
-      // -------------------
-      // BIOSPHERE TO ATMOSPHERE
-      if (bio_sink[currentYear] <= 1.0) {
-        //Draw for small Values
-        FluxPointList.push(
-          new FluxPoint(
-            reservoirTerrestial.x ,
-            reservoirTerrestial.y ,
-            reservoirAtmosphere.x+ random(-randomFactor, randomFactor),
-            reservoirAtmosphere.y+ random(-randomFactor, randomFactor)
-          )
-        );
-      } else {
-        //Draw for Big Numbers
-        for (let i = 0; i <= bio_sink[currentYear] * numberFactor; i++) {
-          FluxPointList.push(
-            new FluxPoint(
-              reservoirTerrestial.x,
-              reservoirTerrestial.y,
-              reservoirAtmosphere.x+ random(-randomFactor, randomFactor),
-              reservoirAtmosphere.y+ random(-randomFactor, randomFactor)
-            )
-          );
-        }
-      }
-      // -------------------
+      addBackwardFluxPoints();
     }
     oldSliderValue = currentSliderValue;
   }
+  // CONSTANT FLUX
+  addConstantFlux();
 
   // ------
   // OUTPUT
@@ -398,29 +246,24 @@ function draw() {
   fill(255);
   drawText(150, canvasHeight * 0.9, year[currentYear]);
 
-  // Draws Fluxes
-  FluxPointList.forEach((point) => {
-    if (point.step != false) {
-      point.step();
-      point.display();
-    }
-    if (point.step() == true) {
-      FluxPointList.splice(point.index, 1);
-    }
-  });
+  // Draw Fluxes
+  drawAllFluxes();
 
+  // Draw Reservoirs
   reservoirAtmosphere.display();
   reservoirOcean.display();
   reservoirTerrestial.display();
   reservoirFossil.display();
+
+  // Draw Infos
   currentInfoBox.display();
   titleBox.display();
   timeline.display();
 }
 
-// -------
+// -----------------------------------------------------------------------
 // CLASSES
-// -------
+// -----------------------------------------------------------------------
 class Reservoir {
   constructor(name, description, data, positionX, positionY, scale) {
     this.name = name;
@@ -567,7 +410,7 @@ class Atmosphere {
 // FLUXPOINT
 // ---------
 class FluxPoint {
-  constructor(startX, startY, endX, endY, stepAmount = 60, diameter = 10) {
+  constructor(startX, startY, endX, endY, stepAmount = 90, diameter = 10) {
     this.startVector = createVector(startX, startY);
     this.currentVector = this.startVector;
     this.endVector = createVector(endX, endY);
@@ -601,6 +444,9 @@ class FluxPoint {
   }
 }
 
+// --------
+// INFO BOX
+// --------
 class InfoBox {
   constructor(title, description) {
     this.title = title;
@@ -619,6 +465,9 @@ class InfoBox {
   }
 }
 
+// ---------
+// TITLE BOX
+// ---------
 class TitleBox {
   constructor(
     title,
@@ -713,6 +562,9 @@ class TitleBox {
   }
 }
 
+// --------
+// TIMELINE
+// --------
 class Timeline {
   constructor(dates, values, positionX, positionY, width, height) {
     this.dates = dates;
@@ -743,7 +595,8 @@ class Timeline {
 
   clicked() {
     if (this.rectIntersect()) {
-      let pos = (this.x + this.width - this.textSpace - this.selectedBarWidth) - mouseX;
+      let pos =
+        this.x + this.width - this.textSpace - this.selectedBarWidth - mouseX;
       let index = Math.floor(pos / this.memberSpace);
       currentYear = index;
     }
@@ -751,9 +604,10 @@ class Timeline {
 
   rectIntersect() {
     return (
-    mouseX >= this.x && mouseX <= this.x + (this.width - this.textSpace)
-    &&
-    mouseY >= (this.y - this.height) && mouseY <= this.y
+      mouseX >= this.x &&
+      mouseX <= this.x + (this.width - this.textSpace) &&
+      mouseY >= this.y - this.height &&
+      mouseY <= this.y
     );
   }
 
@@ -805,9 +659,10 @@ class Timeline {
   }
 }
 
-// ---------
+// -----------------------------------------------------------------------
 // FUNCTIONS
-// ---------
+// -----------------------------------------------------------------------
+
 // Draws Text at a specific location
 function drawText(
   x,
@@ -836,6 +691,217 @@ function mousePressed() {
   reservoirFossil.clicked();
   reservoirAtmosphere.clicked();
   timeline.clicked();
+}
+
+function addFowardFluxPoints() {
+  let numberFactor = 5;
+  let randomFactor = 100;
+  // FOSSIL TO ATMOSPHERE
+  if (fossil_emission_total[currentYear] <= 0.5) {
+    //Draw for small Values
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirFossil.x,
+        reservoirFossil.y,
+        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+      )
+    );
+  } else {
+    //Draw for Big Numbers
+    for (
+      let i = 0;
+      i <= fossil_emission_total[currentYear] * numberFactor;
+      i++
+    ) {
+      FluxPointList.push(
+        new FluxPoint(
+          reservoirFossil.x,
+          reservoirFossil.y,
+          reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+          reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+        )
+      );
+    }
+  }
+  // ATMOSPHERE TO OCEAN
+  if (ocean_sink[currentYear] <= 1.3) {
+    //Draw for small Values
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirAtmosphere.x,
+        reservoirAtmosphere.y,
+        reservoirOcean.x + random(-randomFactor, randomFactor),
+        reservoirOcean.y + random(-randomFactor, randomFactor)
+      )
+    );
+  } else {
+    //Draw for Big Numbers
+    for (let i = 0; i <= ocean_sink[currentYear] * numberFactor; i++) {
+      FluxPointList.push(
+        new FluxPoint(
+          reservoirAtmosphere.x,
+          reservoirAtmosphere.y,
+          reservoirOcean.x + random(-randomFactor, randomFactor),
+          reservoirOcean.y + random(-randomFactor, randomFactor)
+        )
+      );
+    }
+  }
+  // ATMOSPHERE TO BIOSPHERE
+  if (bio_sink[currentYear] <= 1.0) {
+    //Draw for small Values
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirAtmosphere.x,
+        reservoirAtmosphere.y,
+        reservoirTerrestial.x + random(-randomFactor, randomFactor),
+        reservoirTerrestial.y + random(-randomFactor, randomFactor)
+      )
+    );
+  } else {
+    //Draw for Big Numbers
+    for (let i = 0; i <= bio_sink[currentYear] * numberFactor; i++) {
+      FluxPointList.push(
+        new FluxPoint(
+          reservoirAtmosphere.x,
+          reservoirAtmosphere.y,
+          reservoirTerrestial.x + random(-randomFactor, randomFactor),
+          reservoirTerrestial.y + random(-randomFactor, randomFactor)
+        )
+      );
+    }
+  }
+}
+
+function addBackwardFluxPoints() {
+  let numberFactor = 5;
+  let randomFactor = 100;
+  // ATMOSPHERE TO FOSSIL
+  if (fossil_emission_total[currentYear] <= 1.0) {
+    //Draw for small Values
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirAtmosphere.x,
+        reservoirAtmosphere.y,
+        reservoirFossil.x + random(-randomFactor, randomFactor),
+        reservoirFossil.y + random(-randomFactor, randomFactor)
+      )
+    );
+  } else {
+    for (
+      let i = 0;
+      i <= fossil_emission_total[currentYear] * numberFactor;
+      i++
+    ) {
+      FluxPointList.push(
+        new FluxPoint(
+          reservoirAtmosphere.x,
+          reservoirAtmosphere.y,
+          reservoirFossil.x + random(-randomFactor + 50, randomFactor - 50),
+          reservoirFossil.y + random(-randomFactor + 50, randomFactor - 50)
+        )
+      );
+    }
+  }
+  // OCEAN TO ATMOSPHERE
+  if (ocean_sink[currentYear] <= 1.3) {
+    //Draw for small Values
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirOcean.x,
+        reservoirOcean.y,
+        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+      )
+    );
+  } else {
+    //Draw for Big Numbers
+    for (let i = 0; i <= ocean_sink[currentYear] * numberFactor; i++) {
+      FluxPointList.push(
+        new FluxPoint(
+          reservoirOcean.x,
+          reservoirOcean.y,
+          reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+          reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+        )
+      );
+    }
+  }
+  // BIOSPHERE TO ATMOSPHERE
+  if (bio_sink[currentYear] <= 1.0) {
+    //Draw for small Values
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirTerrestial.x,
+        reservoirTerrestial.y,
+        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+      )
+    );
+  } else {
+    //Draw for Big Numbers
+    for (let i = 0; i <= bio_sink[currentYear] * numberFactor; i++) {
+      FluxPointList.push(
+        new FluxPoint(
+          reservoirTerrestial.x,
+          reservoirTerrestial.y,
+          reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+          reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+        )
+      );
+    }
+  }
+}
+
+function addConstantFlux() {
+  let randomFactor = 100;
+  if (frameCount % 24 == 0) {
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirTerrestial.x,
+        reservoirTerrestial.y,
+        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+      )
+    );
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirOcean.x,
+        reservoirOcean.y,
+        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+      )
+    );
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirAtmosphere.x,
+        reservoirAtmosphere.y,
+        reservoirTerrestial.x + random(-randomFactor, randomFactor),
+        reservoirTerrestial.y + random(-randomFactor, randomFactor)
+      )
+    );
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirAtmosphere.x,
+        reservoirAtmosphere.y,
+        reservoirOcean.x + random(-randomFactor, randomFactor),
+        reservoirOcean.y + random(-randomFactor, randomFactor)
+      )
+    );
+  }
+}
+
+function drawAllFluxes() {
+  FluxPointList.forEach((point) => {
+    if (point.step != false) {
+      point.step();
+      point.display();
+    }
+    if (point.step() == true) {
+      FluxPointList.splice(point.index, 1);
+    }
+  });
 }
 
 // Show data in console
