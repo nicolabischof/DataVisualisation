@@ -55,6 +55,9 @@ let res_permafrost;
 // ----------------
 let currentYear;
 let currentInfoBox;
+let currentSliderValue;
+let oldSliderValue;
+let FluxPointList = [];
 
 // -------
 // PRELOAD
@@ -132,8 +135,14 @@ function setup() {
     baseData.getRows().length - 1,
     baseData.getRows().length - 1
   );
+  push();
   year_slider.position(150, canvasHeight * 0.92);
+  year_slider.style("transform", "rotate(180deg)");
+  year_slider.style("color", "FF00FF");
   year_slider.size(1000);
+  pop();
+  currentSliderValue = year_slider.value();
+  oldSliderValue = year_slider.value();
 
   textFont(fontBold);
   textSize(fontsize);
@@ -213,13 +222,192 @@ function draw() {
   // -----
   // INPUT
   // -----
-  currentYear = year_slider.value();
+  let numberFactor = 5;
+  let randomFactor = 100;
+  currentSliderValue = year_slider.value();
+  if (oldSliderValue != currentSliderValue) {
+    currentYear = year_slider.value();
+    if (oldSliderValue > currentSliderValue) {
+      // --> FOWARDS
+      // FOSSIL TO ATMOSPHERE
+      if (fossil_emission_total[currentYear] <= 0.5) {
+        //Draw for small Values
+        FluxPointList.push(
+          new FluxPoint(
+            reservoirFossil.x,
+            reservoirFossil.y,
+            reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+            reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+          )
+        );
+      } else {
+        //Draw for Big Numbers
+        for (
+          let i = 0;
+          i <= fossil_emission_total[currentYear] * numberFactor;
+          i++
+        ) {
+          FluxPointList.push(
+            new FluxPoint(
+              reservoirFossil.x,
+              reservoirFossil.y,
+              reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+              reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+            )
+          );
+        }
+      }
+      // -------------------
+      // ATMOSPHERE TO OCEAN
+      if (ocean_sink[currentYear] <= 1.0) {
+        //Draw for small Values
+        FluxPointList.push(
+          new FluxPoint(
+            reservoirAtmosphere.x,
+            reservoirAtmosphere.y,
+            reservoirOcean.x + random(-randomFactor, randomFactor),
+            reservoirOcean.y + random(-randomFactor, randomFactor)
+          )
+        );
+      } else {
+        //Draw for Big Numbers
+        for (let i = 0; i <= ocean_sink[currentYear] * numberFactor; i++) {
+          FluxPointList.push(
+            new FluxPoint(
+              reservoirAtmosphere.x ,
+              reservoirAtmosphere.y,
+              reservoirOcean.x + random(-randomFactor, randomFactor),
+              reservoirOcean.y  + random(-randomFactor, randomFactor)
+            )
+          );
+        }
+      }
+      // -------------------
+      // ATMOSPHERE TO BIOSPHERE
+      if (bio_sink[currentYear] <= 1.0) {
+        //Draw for small Values
+        FluxPointList.push(
+          new FluxPoint(
+            reservoirAtmosphere.x,
+            reservoirAtmosphere.y ,
+            reservoirTerrestial.x + random(-randomFactor, randomFactor),
+            reservoirTerrestial.y+ random(-randomFactor, randomFactor)
+          )
+        );
+      } else {
+        //Draw for Big Numbers
+        for (let i = 0; i <= bio_sink[currentYear] * numberFactor; i++) {
+          FluxPointList.push(
+            new FluxPoint(
+              reservoirAtmosphere.x ,
+              reservoirAtmosphere.y ,
+              reservoirTerrestial.x+ random(-randomFactor, randomFactor),
+              reservoirTerrestial.y+ random(-randomFactor, randomFactor)
+            )
+          );
+        }
+      }
+      // -------------------
+    } else {
+      // BACKWARDS <--
+      // ATMOSPHERE TO FOSSIL 
+      if (fossil_emission_total[currentYear] <= 1.0) {
+        //Draw for small Values
+        FluxPointList.push(
+          new FluxPoint(
+            reservoirAtmosphere.x ,
+            reservoirAtmosphere.y ,
+            reservoirFossil.x + random(-randomFactor, randomFactor),
+            reservoirFossil.y+ random(-randomFactor, randomFactor)
+          )
+        );
+      } else {
+        for (
+          let i = 0;
+          i <= fossil_emission_total[currentYear] * numberFactor;
+          i++
+        ) {
+          FluxPointList.push(
+            new FluxPoint(
+              reservoirAtmosphere.x ,
+              reservoirAtmosphere.y ,
+              reservoirFossil.x+ random(-randomFactor+50, randomFactor-50),
+              reservoirFossil.y+ random(-randomFactor+50, randomFactor-50)
+            )
+          );
+        }
+      }
+      //--------------------
+      // OCEAN TO ATMOSPHERE
+      if (ocean_sink[currentYear] <= 1.0) {
+        //Draw for small Values
+        FluxPointList.push(
+          new FluxPoint(
+            reservoirOcean.x ,
+            reservoirOcean.y ,
+            reservoirAtmosphere.x+ random(-randomFactor, randomFactor),
+            reservoirAtmosphere.y+ random(-randomFactor, randomFactor)
+          )
+        );
+      } else {
+        //Draw for Big Numbers
+        for (let i = 0; i <= ocean_sink[currentYear] * numberFactor; i++) {
+          FluxPointList.push(
+            new FluxPoint(
+              reservoirOcean.x,
+              reservoirOcean.y ,
+              reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+              reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+            )
+          );
+        }
+      }
+      // -------------------
+      // BIOSPHERE TO ATMOSPHERE
+      if (bio_sink[currentYear] <= 1.0) {
+        //Draw for small Values
+        FluxPointList.push(
+          new FluxPoint(
+            reservoirTerrestial.x ,
+            reservoirTerrestial.y ,
+            reservoirAtmosphere.x+ random(-randomFactor, randomFactor),
+            reservoirAtmosphere.y+ random(-randomFactor, randomFactor)
+          )
+        );
+      } else {
+        //Draw for Big Numbers
+        for (let i = 0; i <= bio_sink[currentYear] * numberFactor; i++) {
+          FluxPointList.push(
+            new FluxPoint(
+              reservoirTerrestial.x,
+              reservoirTerrestial.y,
+              reservoirAtmosphere.x+ random(-randomFactor, randomFactor),
+              reservoirAtmosphere.y+ random(-randomFactor, randomFactor)
+            )
+          );
+        }
+      }
+      // -------------------
+    }
+    oldSliderValue = currentSliderValue;
+  }
 
   // ------
   // OUTPUT
   // ------
   fill(255);
   drawText(150, canvasHeight * 0.9, year[currentYear]);
+
+  // Draws Fluxes
+  FluxPointList.forEach((point) => {
+    if (point.step != false) {
+      point.step();
+      point.display();
+    }
+    if (point.step() == true) {
+      FluxPointList.splice(point.index, 1);
+    }
+  });
 
   reservoirAtmosphere.display();
   reservoirOcean.display();
@@ -264,9 +452,8 @@ class Reservoir {
     drawText(
       this.x,
       this.y,
-      this.name + "\n \n" + round(this.data[currentYear], 0) + " gtC/y"
+      this.name + "\n \n" + round(this.data[currentYear], 1) + " gtC/y"
     );
-
   }
 
   clicked() {
@@ -278,7 +465,17 @@ class Reservoir {
 }
 
 class Atmosphere {
-  constructor(name, description, carbonData, ppmData, temperatureData, scaleIndizes, positionX, positionY, scale) {
+  constructor(
+    name,
+    description,
+    carbonData,
+    ppmData,
+    temperatureData,
+    scaleIndizes,
+    positionX,
+    positionY,
+    scale
+  ) {
     this.name = name;
     this.description = description;
     this.carbonData = carbonData;
@@ -293,7 +490,7 @@ class Atmosphere {
   display() {
     this.drawScales(radians(45));
     this.diameter = this.carbonData[currentYear];
-    this.diameter = (this.diameter * this.scale);
+    this.diameter = this.diameter * this.scale;
     fill(100);
     noStroke();
     circle(this.x, this.y, this.diameter);
@@ -301,7 +498,11 @@ class Atmosphere {
     this.drawMinDiameter();
 
     fill(255);
-    drawText(this.x, this.y, this.name + "\n \n" + round(this.carbonData[currentYear], 0) + " gtC");
+    drawText(
+      this.x,
+      this.y,
+      this.name + "\n \n" + round(this.carbonData[currentYear], 0) + " gtC"
+    );
   }
 
   drawScales(angle) {
@@ -324,8 +525,24 @@ class Atmosphere {
       radius = radius + 8;
       let transX = radius * sin(angle);
       let transY = radius * cos(angle);
-      drawText(transX, transY, this.ppmData[index] + " ppm", 12, 255, CENTER, -angle);
-      drawText(-transX, -transY, "+" + this.temperatureData[index] + " °C", 12, 255, CENTER, -angle);
+      drawText(
+        transX,
+        transY,
+        this.ppmData[index] + " ppm",
+        12,
+        255,
+        CENTER,
+        -angle
+      );
+      drawText(
+        -transX,
+        -transY,
+        "+" + this.temperatureData[index] + " °C",
+        12,
+        255,
+        CENTER,
+        -angle
+      );
     }
     pop();
   }
@@ -346,7 +563,43 @@ class Atmosphere {
   }
 }
 
-class Flux {}
+// ---------
+// FLUXPOINT
+// ---------
+class FluxPoint {
+  constructor(startX, startY, endX, endY, stepAmount = 60, diameter = 10) {
+    this.startVector = createVector(startX, startY);
+    this.currentVector = this.startVector;
+    this.endVector = createVector(endX, endY);
+    this.stepAmount = stepAmount;
+    this.diameter = diameter;
+
+    this.distance = createVector(
+      this.endVector.x - this.startVector.x,
+      this.endVector.y - this.startVector.y
+    );
+    this.stepDistance = createVector(
+      this.distance.x / this.stepAmount,
+      this.distance.y / this.stepAmount
+    );
+    this.currentStep = 0;
+  }
+
+  step() {
+    if (this.currentStep < this.stepAmount) {
+      this.currentVector.add(this.stepDistance);
+      this.currentStep++;
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  display() {
+    fill(255, 0, 0);
+    circle(this.currentVector.x, this.currentVector.y, this.diameter);
+  }
+}
 
 class InfoBox {
   constructor(title, description) {
@@ -367,7 +620,17 @@ class InfoBox {
 }
 
 class TitleBox {
-  constructor(title, option1, option2, selected, positionX, positionY, marginTB, marginLR, scale) {
+  constructor(
+    title,
+    option1,
+    option2,
+    selected,
+    positionX,
+    positionY,
+    marginTB,
+    marginLR,
+    scale
+  ) {
     this.title = title;
     this.option1 = option1;
     this.option2 = option2;
@@ -406,25 +669,17 @@ class TitleBox {
     strokeWeight(3);
 
     // draw boxes
+    rect(this.x, this.y, this.width, this.height, 50);
+    rect(this.x, transY, this.width * 0.5, this.height * 0.5, 0, 0, 0, 50);
     rect(
-      this.x,
-      this.y,
-      this.width,
-      this.height,
-      50
-    );
-    rect(
-      this.x,
+      this.x + this.width * 0.5,
       transY,
       this.width * 0.5,
       this.height * 0.5,
-      0, 0, 0, 50
-    );
-    rect(
-      this.x + this.width * 0.5,
-      transY, this.width * 0.5,
-      this.height * 0.5,
-      0, 0, 50, 0
+      0,
+      0,
+      50,
+      0
     );
 
     // style text
@@ -442,25 +697,19 @@ class TitleBox {
     this.drawOption(
       this.x + this.width * 0.25,
       this.y + this.height * 0.7,
-      this.option1,
+      this.option1
     );
 
     this.drawOption(
       this.x + this.width * 0.75,
       this.y + this.height * 0.7,
-      this.option2,
+      this.option2
     );
   }
 
   drawOption(x, y, option) {
-    let c = (option == this.selected ? color(255, 232, 49) : 255);
-    drawText(
-      x,
-      y,
-      option,
-      this.textsize,
-      c
-    );
+    let c = option == this.selected ? color(255, 232, 49) : 255;
+    drawText(x, y, option, this.textsize, c);
   }
 }
 
@@ -479,7 +728,8 @@ class Timeline {
 
     this.maxEmissionValue = max(values);
     this.textSpace = 130 + this.padding;
-    this.memberSpace = (this.width - this.textSpace - this.selectedBarWidth) / this.dates.length;
+    this.memberSpace =
+      (this.width - this.textSpace - this.selectedBarWidth) / this.dates.length;
   }
 
   display() {
@@ -496,7 +746,13 @@ class Timeline {
 
     for (let i = 0; i < this.dates.length; i++) {
       fill(i == currentYear ? color(255, 232, 49) : 255);
-      let barHeight = map(this.values[i], 0, this.maxEmissionValue, 0, this.height);
+      let barHeight = map(
+        this.values[i],
+        0,
+        this.maxEmissionValue,
+        0,
+        this.height
+      );
       rect(
         this.x + (this.dates.length - i) * this.memberSpace,
         this.y,
@@ -524,7 +780,7 @@ class Timeline {
     );
     drawText(
       textX,
-      this.y - (bigText),
+      this.y - bigText,
       "Fossil Emissions",
       smallText,
       color(255, 232, 49),
@@ -537,13 +793,21 @@ class Timeline {
 // FUNCTIONS
 // ---------
 // Draws Text at a specific location
-function drawText(x, y, textVal, size = fontsize, color = 255, alignment = CENTER, rotation = 0) {
+function drawText(
+  x,
+  y,
+  textVal,
+  size = fontsize,
+  color = 255,
+  alignment = CENTER,
+  rotation = 0
+) {
   push();
   translate(x, y);
   rotate(rotation);
   textSize(size);
   textAlign(alignment, CENTER);
-  noStroke()
+  noStroke();
   fill(color);
   text(textVal, 0, 0);
   pop();
