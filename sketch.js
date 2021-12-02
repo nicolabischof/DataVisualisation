@@ -6,6 +6,7 @@ let canvasWidth = 3840;
 let canvasHeight = 2160;
 let font;
 let fontsize = 40;
+let bg;
 // --------------
 // DATA VARIABLES
 // --------------
@@ -70,6 +71,7 @@ function preload() {
   fontBold = loadFont("fonts/OpenSans-Bold.ttf");
   fontThin = loadFont("fonts/OpenSans-Light.ttf");
 
+  bg = loadImage('data/background.png');
   //   fontRegular = loadFont("fonts/Montserrat-Regular.ttf");
   //   fontBold = loadFont("fonts/Montserrat-Bold.ttf");
   //   fontThin = loadFont("fonts/Montserrat-Thin.ttf");
@@ -225,7 +227,7 @@ function setup() {
 // DRAW
 // -----------------------------------------------------------------------
 function draw() {
-  background(0);
+  background(bg);
   // -----
   // INPUT
   // -----
@@ -284,15 +286,41 @@ class Reservoir {
   display() {
     this.diameter = this.data[currentYear];
     this.diameter = this.diameter * this.scale;
+    push()<
     fill(11, 39, 55, 50);
     noStroke();
     circle(this.x, this.y, this.diameter);
+    stroke(255,225,116);
+    strokeWeight(6);
+    noFill();
+    circle(this.x, this.y, this.diameter);
+    stroke(255,225,116,80);
+    strokeWeight(10);
+    circle(this.x, this.y, this.diameter);
+    stroke(255,225,116,60);
+    strokeWeight(14);
+    circle(this.x, this.y, this.diameter);
+    pop();
+
 
     if (this.name != "FOSSILS") {
       push();
-      stroke(255, 255, 116);
+      stroke(255, 255, 255, 50);
+      strokeWeight(5);
+      strokeCap(SQUARE);
+      canvas.drawingContext.setLineDash([6, 6]);
       noFill();
       circle(this.x, this.y, min(this.data) * this.scale);
+      pop();
+    }
+    else{
+      push();
+      stroke(255, 255, 255, 50);
+      strokeWeight(5);
+      strokeCap(SQUARE);
+      canvas.drawingContext.setLineDash([6, 6]);
+      noFill();
+      circle(this.x, this.y, max(this.data) * this.scale);
       pop();
     }
 
@@ -300,7 +328,7 @@ class Reservoir {
     drawText(
       this.x,
       this.y,
-      this.name + "\n" + round(this.data[currentYear], 1) + " gtC/y"
+      this.name + "\n" + round(this.data[currentYear], 1) + " gtC"
     );
   }
 
@@ -415,7 +443,7 @@ class Atmosphere {
 // FLUXPOINT
 // ---------
 class FluxPoint {
-  constructor(startX, startY, endX, endY, stepAmount = 90, diameter = 10) {
+  constructor(startX, startY, endX, endY, stepAmount = 90, diameter = 15) {
     this.startVector = createVector(startX, startY);
     this.currentVector = this.startVector;
     this.endVector = createVector(endX, endY);
@@ -444,7 +472,7 @@ class FluxPoint {
   }
 
   display() {
-    fill(255, 0, 0);
+    fill(186, 198, 191);
     circle(this.currentVector.x, this.currentVector.y, this.diameter);
   }
 }
@@ -579,7 +607,7 @@ class TitleBox {
   }
 
   drawOption(x, y, option) {
-    let c = option == this.selected ? color(100,100,100) : 255;
+    let c = option == this.selected ? color(255,255,255,50) : 255;
     drawText(x, y, option, this.textsize, c);
   }
 }
@@ -640,7 +668,7 @@ class Timeline {
     noStroke();
 
     for (let i = 0; i < this.dates.length; i++) {
-      fill(i == currentYear ? color(255, 255, 116) : 255);
+      fill(i == currentYear ? color(255, 225, 116) : 255);
       let barHeight = map(
         this.values[i],
         0,
@@ -670,7 +698,7 @@ class Timeline {
       this.y - bigText / 2 - 1,
       year,
       bigText,
-      color(255, 232, 49),
+      color(255, 225, 116),
       LEFT
     );
     drawText(
@@ -678,7 +706,7 @@ class Timeline {
       this.y - bigText,
       "Fossil Emissions",
       smallText,
-      color(255, 232, 49),
+      color(255, 225, 116),
       LEFT
     );
   }
@@ -739,7 +767,7 @@ function mousePressed() {
 
 function addFowardFluxPoints() {
   let numberFactor = 5;
-  let randomFactor = 100;
+  let randomFactor = 200;
   // FOSSIL TO ATMOSPHERE
   if (fossil_emission_total[currentYear] <= 0.5) {
     //Draw for small Values
@@ -747,8 +775,8 @@ function addFowardFluxPoints() {
       new FluxPoint(
         reservoirFossil.x,
         reservoirFossil.y,
-        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+        reservoirAtmosphere.x + random(-randomFactor*0.65, randomFactor*0.65),
+        reservoirAtmosphere.y + random(-randomFactor*0.65, randomFactor*0.65)
       )
     );
   } else {
@@ -762,8 +790,8 @@ function addFowardFluxPoints() {
         new FluxPoint(
           reservoirFossil.x,
           reservoirFossil.y,
-          reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-          reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+          reservoirAtmosphere.x + random(-randomFactor*0.65, randomFactor*0.65),
+          reservoirAtmosphere.y + random(-randomFactor*0.65, randomFactor*0.65)
         )
       );
     }
@@ -775,8 +803,8 @@ function addFowardFluxPoints() {
       new FluxPoint(
         reservoirAtmosphere.x,
         reservoirAtmosphere.y,
-        reservoirOcean.x + random(-randomFactor, randomFactor),
-        reservoirOcean.y + random(-randomFactor, randomFactor)
+        reservoirOcean.x + random(-randomFactor*2.5, randomFactor*2.5),
+        reservoirOcean.y + random(-randomFactor*2.5, randomFactor*2.5)
       )
     );
   } else {
@@ -786,8 +814,8 @@ function addFowardFluxPoints() {
         new FluxPoint(
           reservoirAtmosphere.x,
           reservoirAtmosphere.y,
-          reservoirOcean.x + random(-randomFactor, randomFactor),
-          reservoirOcean.y + random(-randomFactor, randomFactor)
+          reservoirOcean.x + random(-randomFactor*2.5, randomFactor*2.5),
+          reservoirOcean.y + random(-randomFactor*2.5, randomFactor*2.5)
         )
       );
     }

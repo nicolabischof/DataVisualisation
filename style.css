@@ -39,7 +39,7 @@ canvas {
 .yearSlider::-webkit-slider-thumb {
   width: 5px;
   height: 40px;
-  background: #FFE174;
+  background: #ffe37e;
   cursor: pointer;
   -webkit-appearance: none;  
   /* Border radius gives rounded corners, if they're big enough, you end up with circles */
