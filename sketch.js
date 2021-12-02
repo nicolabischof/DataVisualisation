@@ -217,7 +217,7 @@ function setup() {
     75,
     canvasHeight - 75,
     1500,
-    250
+    350
   );
 
   buttonChangeCycle = new Button(3280, 2030, "SLOW CYCLE");
@@ -302,7 +302,7 @@ class Reservoir {
     circle(this.x, this.y, this.diameter);
     pop();
 
-
+    
     if (this.name != "FOSSILS") {
       push();
       stroke(255, 255, 255, 50);
@@ -325,11 +325,19 @@ class Reservoir {
     }
 
     fill(255);
+    if(this.name == "OCEAN"){
+      drawText(
+        this.x,
+        this.y,
+        this.name + "\n" + round(this.data[currentYear], 1) + " Gigaton Carbon"
+      );
+    }else{
     drawText(
       this.x,
       this.y,
       this.name + "\n" + round(this.data[currentYear], 1) + " gtC"
     );
+  }
   }
 
   clicked() {
@@ -665,12 +673,9 @@ class Timeline {
   clicked() {
     if (this.rectIntersect()) {
       let pos = ((this.x + this.width) - (this.textSpace + this.selectedBarWidth)) - mouseX;
-      console.log(pos);
       pos += this.memberSpace * 0.5;
-      console.log(pos);
       let index = Math.floor(pos / this.memberSpace);
       index = constrain(index, 0, this.dates.length - 1);
-      console.log(index);
       currentYear = index;
       year_slider.value(index);
     }
@@ -701,6 +706,9 @@ class Timeline {
         i == currentYear ? this.selectedBarWidth : this.barWidth,
         -barHeight
       );
+      if(i == currentYear){
+        drawText(this.x + (this.dates.length - i) * this.memberSpace,this.y-barHeight-10,"+ " + fossil_emission_total[currentYear]+ " gtC/y",30,color(255,225,116),LEFT,-HALF_PI);
+      }
     }
   }
 
@@ -898,8 +906,8 @@ function addBackwardFluxPoints() {
       new FluxPoint(
         reservoirOcean.x,
         reservoirOcean.y,
-        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+        reservoirFossil.x + random(-randomFactor, randomFactor),
+        reservoirFossil.y + random(-randomFactor, randomFactor)
       )
     );
   } else {
@@ -909,8 +917,8 @@ function addBackwardFluxPoints() {
         new FluxPoint(
           reservoirOcean.x,
           reservoirOcean.y,
-          reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-          reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+          reservoirFossil.x + random(-randomFactor, randomFactor),
+          reservoirFossil.y + random(-randomFactor, randomFactor)
         )
       );
     }
@@ -922,8 +930,8 @@ function addBackwardFluxPoints() {
       new FluxPoint(
         reservoirTerrestial.x,
         reservoirTerrestial.y,
-        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+        reservoirFossil.x + random(-randomFactor, randomFactor),
+        reservoirFossil.y + random(-randomFactor, randomFactor)
       )
     );
   } else {
@@ -933,8 +941,8 @@ function addBackwardFluxPoints() {
         new FluxPoint(
           reservoirTerrestial.x,
           reservoirTerrestial.y,
-          reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-          reservoirAtmosphere.y + random(-randomFactor, randomFactor)
+          reservoirFossil.x + random(-randomFactor, randomFactor),
+          reservoirFossil.y + random(-randomFactor, randomFactor)
         )
       );
     }
