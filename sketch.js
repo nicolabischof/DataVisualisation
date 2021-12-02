@@ -259,7 +259,7 @@ function draw() {
       }
       // -------------------
       // ATMOSPHERE TO OCEAN
-      if (ocean_sink[currentYear] <= 1.0) {
+      if (ocean_sink[currentYear] <= 1.3) {
         //Draw for small Values
         FluxPointList.push(
           new FluxPoint(
@@ -339,7 +339,7 @@ function draw() {
       }
       //--------------------
       // OCEAN TO ATMOSPHERE
-      if (ocean_sink[currentYear] <= 1.0) {
+      if (ocean_sink[currentYear] <= 1.3) {
         //Draw for small Values
         FluxPointList.push(
           new FluxPoint(
