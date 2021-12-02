@@ -617,9 +617,13 @@ class Timeline {
 
   clicked() {
     if (this.rectIntersect()) {
-      let pos =
-        this.x + this.width - this.textSpace - this.selectedBarWidth - mouseX;
+      let pos = ((this.x + this.width) - (this.textSpace + this.selectedBarWidth)) - mouseX;
+      console.log(pos);
+      pos += this.memberSpace * 0.5;
+      console.log(pos);
       let index = Math.floor(pos / this.memberSpace);
+      index = constrain(index, 0, this.dates.length-1);
+      console.log(index);
       currentYear = index;
       year_slider.value(index);
     }
@@ -627,10 +631,8 @@ class Timeline {
 
   rectIntersect() {
     return (
-      mouseX >= this.x &&
-      mouseX <= this.x + (this.width - this.textSpace) &&
-      mouseY >= this.y - this.height &&
-      mouseY <= this.y
+      mouseX >= this.x && mouseX <= this.x + (this.width - this.textSpace - this.selectedBarWidth) &&
+      mouseY >= (this.y - this.height) && mouseY <= this.y
     );
   }
 
