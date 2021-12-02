@@ -134,11 +134,11 @@ function setup() {
     baseData.getRows().length - 1,
     baseData.getRows().length - 1
   );
+  year_slider.addClass("yearSlider");
   push();
-  year_slider.position(150, canvasHeight * 0.92);
+  year_slider.position(76, canvasHeight - 60);
   year_slider.style("transform", "rotate(180deg)");
-  year_slider.style("color", "FF00FF");
-  year_slider.size(1000);
+  year_slider.size(1358);
   pop();
   currentSliderValue = year_slider.value();
   oldSliderValue = year_slider.value();
@@ -154,37 +154,37 @@ function setup() {
   // CLASSES
   // -------
   reservoirAtmosphere = new Atmosphere(
-    "Atmosphere",
+    "ATMOSPHERE",
     "this is the atmosphere, which shows we're fucked.",
     res_atmosphere,
     ppm,
     temperature,
     [348, 100, 81, 48, 21],
-    canvasWidth * 0.5,
+    1470,
     canvasHeight * 0.5,
     0.7
   );
 
   reservoirOcean = new Reservoir(
-    "Ocean Reservoir",
+    "OCEAN",
     "Ocean Reservoir Description Blablabla",
     res_ocean,
-    canvasWidth * 0.8,
-    canvasHeight * 0.25,
+    canvasWidth * 0.75,
+    canvasHeight * 0.2,
     0.04
   );
 
   reservoirTerrestial = new Reservoir(
-    "Terrestial Reservoir",
+    "BIOSPHERE",
     "Terrestial Reservoir Description Blablabla",
     res_bio_avrg,
-    canvasWidth * 0.55,
-    canvasHeight * 0.75,
+    canvasWidth * 0.58,
+    canvasHeight * 0.8,
     0.3
   );
 
   reservoirFossil = new Reservoir(
-    "Fossil Reservoir",
+    "FOSSILS",
     "Fossil Reservoir Description Blablabla",
     res_fossil_avrg,
     canvasWidth * 0.15,
@@ -192,15 +192,18 @@ function setup() {
     0.3
   );
 
-  currentInfoBox = new InfoBox("ANY", "Description");
+  currentInfoBox = new InfoBox(
+    "THE CARBON CYCLES",
+    "Most people have heard of the carbon cyle, but what's less known is the fact that there' actually two separate natural mechanisms on earth that move around carbon. this visualisation shows the slow and the fast domain of the cycle, and tries to build an understanding of why the use of fossil fuels has as big an impact it has on the environment. though a simplification, the visualisation tries to convey the science behind the call for zero fossil emission."
+  );
 
   titleBox = new TitleBox(
-    "Carbon Cycle",
-    "slow",
-    "fast",
-    "slow",
-    canvasWidth * 0.1,
-    canvasHeight * 0.1,
+    "CARBON CYCLE",
+    "SLOW",
+    "FAST",
+    "SLOW",
+    35,
+    30,
     20,
     20,
     2
@@ -209,11 +212,13 @@ function setup() {
   timeline = new Timeline(
     year,
     fossil_emission_total,
-    canvasWidth * 0.03,
-    canvasHeight - 500,
-    canvasWidth * 0.4,
-    150
+    75,
+    canvasHeight - 75,
+    1500,
+    250
   );
+
+  buttonChangeCycle = new Button(3280, 2030, "SLOW CYCLE");
 }
 
 // -----------------------------------------------------------------------
@@ -243,9 +248,6 @@ function draw() {
   // ------
   // OUTPUT
   // ------
-  fill(255);
-  drawText(150, canvasHeight * 0.9, year[currentYear]);
-
   // Draw Fluxes
   drawAllFluxes();
 
@@ -259,6 +261,9 @@ function draw() {
   currentInfoBox.display();
   titleBox.display();
   timeline.display();
+
+  // Draw Button
+  buttonChangeCycle.display();
 }
 
 // -----------------------------------------------------------------------
@@ -279,13 +284,13 @@ class Reservoir {
   display() {
     this.diameter = this.data[currentYear];
     this.diameter = this.diameter * this.scale;
-    fill(255, 255, 255, 50);
+    fill(11, 39, 55, 50);
     noStroke();
     circle(this.x, this.y, this.diameter);
 
-    if (this.name != "Fossil Reservoir") {
+    if (this.name != "FOSSILS") {
       push();
-      stroke(255, 0, 0);
+      stroke(255, 255, 116);
       noFill();
       circle(this.x, this.y, min(this.data) * this.scale);
       pop();
@@ -295,7 +300,7 @@ class Reservoir {
     drawText(
       this.x,
       this.y,
-      this.name + "\n \n" + round(this.data[currentYear], 1) + " gtC/y"
+      this.name + "\n" + round(this.data[currentYear], 1) + " gtC/y"
     );
   }
 
@@ -344,7 +349,7 @@ class Atmosphere {
     drawText(
       this.x,
       this.y,
-      this.name + "\n \n" + round(this.carbonData[currentYear], 0) + " gtC"
+      this.name + "\n" + round(this.carbonData[currentYear], 0) + " gtC"
     );
   }
 
@@ -459,9 +464,24 @@ class InfoBox {
   }
 
   display() {
+    //Title
+    push();
+    textSize(40);
+    textAlign(LEFT, BOTTOM);
+    noStroke();
     fill(255);
-    drawText(canvasWidth * 0.8, canvasHeight * 0.8, this.title);
-    drawText(canvasWidth * 0.8, canvasHeight * 0.82, this.description);
+    textWrap(WORD);
+    text(this.title, 2830, 1490, 850);
+    pop();
+    //Description
+    push();
+    textSize(32);
+    textAlign(LEFT, BOTTOM);
+    noStroke();
+    fill(255);
+    textWrap(WORD);
+    text(this.description, 2830, 1540, 850);
+    pop();
   }
 }
 
@@ -515,10 +535,12 @@ class TitleBox {
     // style boxes
     noFill();
     stroke(255);
-    strokeWeight(3);
+    strokeWeight(1);
 
     // draw boxes
-    rect(this.x, this.y, this.width, this.height, 50);
+    line(this.x+25,transY,this.x + this.width-25, transY);
+    line(this.x + this.width*0.5,this.y + this.height * 0.5,this.x + this.width*0.5, this.y+ this.height);
+    /*rect(this.x, this.y, this.width, this.height, 50);
     rect(this.x, transY, this.width * 0.5, this.height * 0.5, 0, 0, 0, 50);
     rect(
       this.x + this.width * 0.5,
@@ -529,7 +551,7 @@ class TitleBox {
       0,
       50,
       0
-    );
+    );*/
 
     // style text
     noStroke();
@@ -557,7 +579,7 @@ class TitleBox {
   }
 
   drawOption(x, y, option) {
-    let c = option == this.selected ? color(255, 232, 49) : 255;
+    let c = option == this.selected ? color(100,100,100) : 255;
     drawText(x, y, option, this.textsize, c);
   }
 }
@@ -576,7 +598,7 @@ class Timeline {
 
     this.barWidth = 1;
     this.selectedBarWidth = 3;
-    this.padding = 5;
+    this.padding = 10 ;
 
     this.maxEmissionValue = max(values);
     this.textSpace = 130 + this.padding;
@@ -599,6 +621,7 @@ class Timeline {
         this.x + this.width - this.textSpace - this.selectedBarWidth - mouseX;
       let index = Math.floor(pos / this.memberSpace);
       currentYear = index;
+      year_slider.value(index);
     }
   }
 
@@ -615,7 +638,7 @@ class Timeline {
     noStroke();
 
     for (let i = 0; i < this.dates.length; i++) {
-      fill(i == currentYear ? color(255, 232, 49) : 255);
+      fill(i == currentYear ? color(255, 255, 116) : 255);
       let barHeight = map(
         this.values[i],
         0,
@@ -635,8 +658,8 @@ class Timeline {
   drawLabel() {
     let year = this.dates[currentYear];
     let textX = this.x + this.width + this.padding - this.textSpace;
-    let smallText = fontsize * 0.48;
-    let bigText = fontsize * 1.6;
+    let smallText = fontsize * 0.74;
+    let bigText = fontsize * 2.5;
 
     textFont(fontThin);
 
@@ -659,6 +682,24 @@ class Timeline {
   }
 }
 
+class Button {
+  constructor(positionX, positionY, text) {
+    this.x = positionX;
+    this.y = positionY;
+    this.text = text;
+  }
+  display() {
+    push();
+    noFill();
+    stroke(255);
+    strokeWeight(2);
+    rectMode(CENTER);
+    rect(this.x, this.y, 900, 119, 50, 50, 50, 50);
+    drawText(this.x, this.y-10, this.text, 48);
+    pop();
+  }
+}
+
 // -----------------------------------------------------------------------
 // FUNCTIONS
 // -----------------------------------------------------------------------
@@ -671,13 +712,14 @@ function drawText(
   size = fontsize,
   color = 255,
   alignment = CENTER,
-  rotation = 0
+  rotation = 0,
+  alignmentH = CENTER
 ) {
   push();
   translate(x, y);
   rotate(rotation);
   textSize(size);
-  textAlign(alignment, CENTER);
+  textAlign(alignment, alignmentH);
   noStroke();
   fill(color);
   text(textVal, 0, 0);
