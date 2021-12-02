@@ -149,7 +149,7 @@ function setup() {
   currentYear = baseData.getRows().length - 1;
 
   // TEXT STYLE
-  textFont(fontBold);
+  textFont(fontThin);
   textSize(fontsize);
 
   // -------
@@ -237,7 +237,7 @@ function draw() {
     currentYear = year_slider.value();
     if (oldSliderValue > currentSliderValue) {
       // --> FOWARDS
-      addFowardFluxPoints();
+      addForwardFluxPoints();
     } else {
       // BACKWARDS <--
       addBackwardFluxPoints();
@@ -286,19 +286,19 @@ class Reservoir {
   display() {
     this.diameter = this.data[currentYear];
     this.diameter = this.diameter * this.scale;
-    push()<
+    push();
     fill(11, 39, 55, 99);
     noStroke();
     circle(this.x, this.y, this.diameter);
-    stroke(255,225,116);
+    stroke(255, 225, 116);
     strokeWeight(6);
     noFill();
     circle(this.x, this.y, this.diameter);
-    stroke(255,225,116,80);
-    strokeWeight(10);
+    stroke(255, 225, 116, 80);
+    strokeWeight(8);
     circle(this.x, this.y, this.diameter);
-    stroke(255,225,116,60);
-    strokeWeight(14);
+    stroke(255, 225, 116, 60);
+    strokeWeight(12);
     circle(this.x, this.y, this.diameter);
     pop();
 
@@ -308,17 +308,16 @@ class Reservoir {
       stroke(255, 255, 255, 50);
       strokeWeight(5);
       strokeCap(SQUARE);
-      canvas.drawingContext.setLineDash([6, 6]);
+      canvas.drawingContext.setLineDash([4, 4]);
       noFill();
       circle(this.x, this.y, min(this.data) * this.scale);
       pop();
-    }
-    else{
+    } else {
       push();
       stroke(255, 255, 255, 50);
       strokeWeight(5);
       strokeCap(SQUARE);
-      canvas.drawingContext.setLineDash([6, 6]);
+      canvas.drawingContext.setLineDash([4, 4]);
       noFill();
       circle(this.x, this.y, max(this.data) * this.scale);
       pop();
@@ -379,17 +378,25 @@ class Atmosphere {
   }
 
   display() {
-    this.drawScales(radians(45));
     this.diameter = this.carbonData[currentYear];
     this.diameter = this.diameter * this.scale;
-    fill("#0B273787");
+    fill(11, 39, 55, 99);
     noStroke();
     circle(this.x, this.y, this.diameter);
     noFill();
-    stroke("#FFE174E6");
+    stroke(255, 225, 116);
     strokeWeight(6);
+    noFill();
+    circle(this.x, this.y, this.diameter);
+    stroke(255, 225, 116, 80);
+    strokeWeight(8);
+    circle(this.x, this.y, this.diameter);
+    stroke(255, 225, 116, 60);
+    strokeWeight(12);
     circle(this.x, this.y, this.diameter);
     this.drawMinDiameter();
+    this.drawScales(PI / 4);
+
 
     fill(255);
     drawText(
@@ -417,7 +424,7 @@ class Atmosphere {
 
     for (let i = 0; i < this.chartData.strokeWeight.length; i++) {
       let offset = 13;
-      
+
       let radius = this.chartData.carbon[i] * this.scale * 0.5;
       radius -= offset
       let transX = radius * sin(angle);
@@ -450,8 +457,9 @@ class Atmosphere {
 
   drawMinDiameter() {
     push();
-    stroke(255, 255, 255, 127);
-    canvas.drawingContext.setLineDash([4,4]);
+    stroke(255, 255, 255, 50);
+    strokeWeight(5);
+    canvas.drawingContext.setLineDash([4, 4]);
     strokeCap(SQUARE);
     noFill();
     circle(this.x, this.y, min(this.carbonData) * this.scale);
@@ -634,7 +642,7 @@ class TitleBox {
   }
 
   drawOption(x, y, option) {
-    let c = option == this.selected ? color(255,255,255,50) : 255;
+    let c = option == this.selected ? color(255, 255, 255, 50) : 255;
     drawText(x, y, option, this.textsize, c);
   }
 }
@@ -718,8 +726,6 @@ class Timeline {
     let smallText = fontsize * 0.74;
     let bigText = fontsize * 2.5;
 
-    textFont(fontThin);
-
     drawText(
       textX,
       this.y - bigText / 2 - 1,
@@ -792,7 +798,7 @@ function mousePressed() {
   timeline.clicked();
 }
 
-function addFowardFluxPoints() {
+function addForwardFluxPoints() {
   let numberFactor = 5;
   let randomFactor = 200;
   // FOSSIL TO ATMOSPHERE
@@ -802,8 +808,8 @@ function addFowardFluxPoints() {
       new FluxPoint(
         reservoirFossil.x,
         reservoirFossil.y,
-        reservoirAtmosphere.x + random(-randomFactor*0.65, randomFactor*0.65),
-        reservoirAtmosphere.y + random(-randomFactor*0.65, randomFactor*0.65)
+        reservoirAtmosphere.x + random(-randomFactor * 0.65, randomFactor * 0.65),
+        reservoirAtmosphere.y + random(-randomFactor * 0.65, randomFactor * 0.65)
       )
     );
   } else {
@@ -815,8 +821,8 @@ function addFowardFluxPoints() {
         new FluxPoint(
           reservoirFossil.x,
           reservoirFossil.y,
-          reservoirAtmosphere.x + random(-randomFactor*0.65, randomFactor*0.65),
-          reservoirAtmosphere.y + random(-randomFactor*0.65, randomFactor*0.65)
+          reservoirAtmosphere.x + random(-randomFactor * 0.65, randomFactor * 0.65),
+          reservoirAtmosphere.y + random(-randomFactor * 0.65, randomFactor * 0.65)
         )
       );
     }
@@ -828,8 +834,8 @@ function addFowardFluxPoints() {
       new FluxPoint(
         reservoirAtmosphere.x,
         reservoirAtmosphere.y,
-        reservoirOcean.x + random(-randomFactor*2.5, randomFactor*2.5),
-        reservoirOcean.y + random(-randomFactor*2.5, randomFactor*2.5)
+        reservoirOcean.x + random(-randomFactor * 2.5, randomFactor * 2.5),
+        reservoirOcean.y + random(-randomFactor * 2.5, randomFactor * 2.5)
       )
     );
   } else {
@@ -839,8 +845,8 @@ function addFowardFluxPoints() {
         new FluxPoint(
           reservoirAtmosphere.x,
           reservoirAtmosphere.y,
-          reservoirOcean.x + random(-randomFactor*2.5, randomFactor*2.5),
-          reservoirOcean.y + random(-randomFactor*2.5, randomFactor*2.5)
+          reservoirOcean.x + random(-randomFactor * 2.5, randomFactor * 2.5),
+          reservoirOcean.y + random(-randomFactor * 2.5, randomFactor * 2.5)
         )
       );
     }
