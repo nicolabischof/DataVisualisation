@@ -160,9 +160,9 @@ function setup() {
     ppm,
     temperature,
     [348, 100, 81, 48, 21],
-    1470,
-    canvasHeight * 0.5,
-    0.7
+    1594,
+    1076,
+    0.60
   );
 
   reservoirOcean = new Reservoir(
@@ -327,22 +327,32 @@ class Atmosphere {
     this.name = name;
     this.description = description;
     this.carbonData = carbonData;
-    this.ppmData = ppmData;
-    this.temperatureData = temperatureData;
-    this.scaleIndizes = scaleIndizes;
     this.x = positionX;
     this.y = positionY;
     this.scale = scale;
+
+    this.chartData = {
+      "ppmWidth": [PI * 0.1, PI * 0.076, PI * 0.06],
+      "tempWidth": [PI * 0.085, PI * 0.067, PI * 0.05],
+      "strokeWeight": [6, 7.5, 13],
+      "pattern": [2, 10],
+      "carbon": ["655", "860", "1070"],
+      "ppm": ["410", "455", "498"],
+      "temp": ["1.0", "1.5", "2.0"]
+    };
   }
 
   display() {
     this.drawScales(radians(45));
     this.diameter = this.carbonData[currentYear];
     this.diameter = this.diameter * this.scale;
-    fill(100);
+    fill("#0B273787");
     noStroke();
     circle(this.x, this.y, this.diameter);
-
+    noFill();
+    stroke("#FFE174E6");
+    strokeWeight(6);
+    circle(this.x, this.y, this.diameter);
     this.drawMinDiameter();
 
     fill(255);
@@ -357,36 +367,43 @@ class Atmosphere {
     push();
     translate(this.x, this.y);
     push();
-    canvas.drawingContext.setLineDash([6, 6]);
+    canvas.drawingContext.setLineDash(this.chartData.pattern);
+    strokeCap(SQUARE);
     noFill();
     stroke(255);
-    strokeWeight(1);
-    for (let i = 0; i < this.scaleIndizes.length; i++) {
-      let index = this.scaleIndizes[i];
-      circle(0, 0, this.carbonData[index] * this.scale);
+    for (let i = 0; i < this.chartData.strokeWeight.length; i++) {
+      let diameter = this.chartData.carbon[i] * this.scale
+      strokeWeight(this.chartData.strokeWeight[i]);
+      arc(0, 0, diameter, diameter, PI + angle + this.chartData.tempWidth[i], angle - this.chartData.ppmWidth[i]);
+      arc(0, 0, diameter, diameter, angle + this.chartData.ppmWidth[i], angle - PI - this.chartData.tempWidth[i]);
     }
     pop();
 
-    for (let i = 0; i < this.scaleIndizes.length; i++) {
-      let index = this.scaleIndizes[i];
-      let radius = this.carbonData[index] * this.scale * 0.5;
-      radius = radius + 8;
+    for (let i = 0; i < this.chartData.strokeWeight.length; i++) {
+      let offset = 13;
+      
+      let radius = this.chartData.carbon[i] * this.scale * 0.5;
+      radius -= offset
       let transX = radius * sin(angle);
       let transY = radius * cos(angle);
       drawText(
         transX,
         transY,
-        this.ppmData[index] + " ppm",
-        12,
+        this.chartData.ppm[i] + " ppm",
+        25,
         255,
         CENTER,
         -angle
       );
+
+      radius = this.chartData.carbon[i] * this.scale * 0.5;
+      transX = radius * sin(angle);
+      transY = radius * cos(angle);
       drawText(
         -transX,
         -transY,
-        "+" + this.temperatureData[index] + " °C",
-        12,
+        "+" + this.chartData.temp[i] + " °C",
+        25,
         255,
         CENTER,
         -angle
@@ -397,7 +414,9 @@ class Atmosphere {
 
   drawMinDiameter() {
     push();
-    stroke(255, 0, 0);
+    stroke(255, 255, 255, 127);
+    canvas.drawingContext.setLineDash([4,4]);
+    strokeCap(SQUARE);
     noFill();
     circle(this.x, this.y, min(this.carbonData) * this.scale);
     pop();
@@ -538,8 +557,8 @@ class TitleBox {
     strokeWeight(1);
 
     // draw boxes
-    line(this.x+25,transY,this.x + this.width-25, transY);
-    line(this.x + this.width*0.5,this.y + this.height * 0.5,this.x + this.width*0.5, this.y+ this.height);
+    line(this.x + 25, transY, this.x + this.width - 25, transY);
+    line(this.x + this.width * 0.5, this.y + this.height * 0.5, this.x + this.width * 0.5, this.y + this.height);
     /*rect(this.x, this.y, this.width, this.height, 50);
     rect(this.x, transY, this.width * 0.5, this.height * 0.5, 0, 0, 0, 50);
     rect(
@@ -579,7 +598,7 @@ class TitleBox {
   }
 
   drawOption(x, y, option) {
-    let c = option == this.selected ? color(100,100,100) : 255;
+    let c = option == this.selected ? color(100, 100, 100) : 255;
     drawText(x, y, option, this.textsize, c);
   }
 }
@@ -598,7 +617,7 @@ class Timeline {
 
     this.barWidth = 1;
     this.selectedBarWidth = 3;
-    this.padding = 10 ;
+    this.padding = 10;
 
     this.maxEmissionValue = max(values);
     this.textSpace = 130 + this.padding;
@@ -622,7 +641,7 @@ class Timeline {
       pos += this.memberSpace * 0.5;
       console.log(pos);
       let index = Math.floor(pos / this.memberSpace);
-      index = constrain(index, 0, this.dates.length-1);
+      index = constrain(index, 0, this.dates.length - 1);
       console.log(index);
       currentYear = index;
       year_slider.value(index);
@@ -697,7 +716,7 @@ class Button {
     strokeWeight(2);
     rectMode(CENTER);
     rect(this.x, this.y, 900, 119, 50, 50, 50, 50);
-    drawText(this.x, this.y-10, this.text, 48);
+    drawText(this.x, this.y - 10, this.text, 48);
     pop();
   }
 }
@@ -754,9 +773,7 @@ function addFowardFluxPoints() {
   } else {
     //Draw for Big Numbers
     for (
-      let i = 0;
-      i <= fossil_emission_total[currentYear] * numberFactor;
-      i++
+      let i = 0; i <= fossil_emission_total[currentYear] * numberFactor; i++
     ) {
       FluxPointList.push(
         new FluxPoint(
@@ -834,9 +851,7 @@ function addBackwardFluxPoints() {
     );
   } else {
     for (
-      let i = 0;
-      i <= fossil_emission_total[currentYear] * numberFactor;
-      i++
+      let i = 0; i <= fossil_emission_total[currentYear] * numberFactor; i++
     ) {
       FluxPointList.push(
         new FluxPoint(
