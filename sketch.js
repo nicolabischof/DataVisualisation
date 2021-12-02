@@ -287,7 +287,7 @@ class Reservoir {
     this.diameter = this.data[currentYear];
     this.diameter = this.diameter * this.scale;
     push()<
-    fill(11, 39, 55, 50);
+    fill(11, 39, 55, 99);
     noStroke();
     circle(this.x, this.y, this.diameter);
     stroke(255,225,116);
