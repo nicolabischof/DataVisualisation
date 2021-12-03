@@ -7,6 +7,7 @@ let canvasHeight = 2160;
 let font;
 let fontsize = 40;
 let bg;
+let descriptionPicture;
 // --------------
 // DATA VARIABLES
 // --------------
@@ -55,6 +56,7 @@ let res_permafrost;
 // GLOBAL VARIABLES
 // ----------------
 let currentYear;
+let selected = "";
 let currentInfoBox;
 let currentSliderValue;
 let oldSliderValue;
@@ -72,6 +74,7 @@ function preload() {
   fontThin = loadFont("fonts/OpenSans-Light.ttf");
 
   bg = loadImage('data/background.png');
+  descriptionPicture = loadImage('data/Description.png');
   //   fontRegular = loadFont("fonts/Montserrat-Regular.ttf");
   //   fontBold = loadFont("fonts/Montserrat-Bold.ttf");
   //   fontThin = loadFont("fonts/Montserrat-Thin.ttf");
@@ -157,7 +160,7 @@ function setup() {
   // -------
   reservoirAtmosphere = new Atmosphere(
     "ATMOSPHERE",
-    "this is the atmosphere, which shows we're fucked.",
+    "This is the carbon cycles \"collecting basin\". When carbon is released from other reservoirs, it gets absorbed by the atmosphere as various carbon gasses, CO2 being the most common. From there, it is fed back into the cycles through different mechanisms. If the other reservoirs are already full, the carbon that cannot be absorbed stays behind. It is those gasses that cause the greenhouse effect: the higher their concentration, the more our suns rays heat up the earths surface.",
     res_atmosphere,
     ppm,
     temperature,
@@ -169,7 +172,7 @@ function setup() {
 
   reservoirOcean = new Reservoir(
     "OCEAN",
-    "Ocean Reservoir Description Blablabla",
+    "The absorption of CO2 by the oceans is one of the most important forms of carbon capture, limiting the human-induced increase of carbon dioxide in the atmosphere. However, this process is limited by a number of factors. CO2 absorption makes water more acidic, which affects ocean biosystems. The projected increase in ocean acidity could slow the biological deposition of for example calcium carbonates, reducing the ocean's ability to absorb CO2.",
     res_ocean,
     canvasWidth * 0.75,
     canvasHeight * 0.2,
@@ -178,7 +181,7 @@ function setup() {
 
   reservoirTerrestial = new Reservoir(
     "BIOSPHERE",
-    "Terrestial Reservoir Description Blablabla",
+    "The terrestrial biosphere includes the organic carbon in all living and dead terrestrial organisms as well as the carbon stored in the soil. The uptake of Co2 from the atmosphere is limited by the maximum capacity of organic mass, like trees, roots or living creatures. About 500 gigatons of carbon are stored above ground in plants and other living organisms, while the soil contains about 1,900 gigatons of carbon. Plants extract it from the air in the form of carbon dioxide and convert it into organic carbon. Organic carbon is a major component of all living organisms on Earth.",
     res_bio_avrg,
     canvasWidth * 0.58,
     canvasHeight * 0.8,
@@ -187,7 +190,7 @@ function setup() {
 
   reservoirFossil = new Reservoir(
     "FOSSILS",
-    "Fossil Reservoir Description Blablabla",
+    "A fossil fuel is a hydrocarbon-containing material formed underground from the remains of dead plants and animals that humans break down and burn to release energy for use. Shifting these gigatons of carbon in the form of greenhouse gases from the slow to the fast carbon cycle is the main problem. Climate change is largely driven by the release of greenhouse gases such as CO2, with fossil fuel combustion being the primary source of these emissions. Continued increases in global temperatures will lead to further negative impacts on both ecosystems and humans.",
     res_fossil_avrg,
     canvasWidth * 0.15,
     canvasHeight * 0.5,
@@ -266,6 +269,9 @@ function draw() {
 
   // Draw Button
   buttonChangeCycle.display();
+
+  // Draw Description
+  image(descriptionPicture, 3260, 1200);
 }
 
 // -----------------------------------------------------------------------
@@ -287,7 +293,7 @@ class Reservoir {
     this.diameter = this.data[currentYear];
     this.diameter = this.diameter * this.scale;
     push();
-    fill(11, 39, 55, 99);
+    selected == this.name ? fill("#89A79A") : fill(11, 39, 55, 99);
     noStroke();
     circle(this.x, this.y, this.diameter);
     stroke(255, 225, 116);
@@ -302,7 +308,7 @@ class Reservoir {
     circle(this.x, this.y, this.diameter);
     pop();
 
-    
+
     if (this.name != "FOSSILS") {
       push();
       stroke(255, 255, 255, 50);
@@ -324,25 +330,30 @@ class Reservoir {
     }
 
     fill(255);
-    if(this.name == "OCEAN"){
+    if (this.name == "OCEAN") {
       drawText(
         this.x,
         this.y,
         this.name + "\n" + round(this.data[currentYear], 1) + " Gigaton Carbon"
       );
-    }else{
-    drawText(
-      this.x,
-      this.y,
-      this.name + "\n" + round(this.data[currentYear], 1) + " gtC"
-    );
-  }
+    } else {
+      drawText(
+        this.x,
+        this.y,
+        this.name + "\n" + round(this.data[currentYear], 1) + " gtC"
+      );
+    }
   }
 
   clicked() {
     if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
       currentInfoBox.title = this.name;
       currentInfoBox.description = this.description;
+      currentInfoBox.background = 1;
+      selected = this.name;
+      return 1;
+    } else {
+      return 0;
     }
   }
 }
@@ -380,7 +391,7 @@ class Atmosphere {
   display() {
     this.diameter = this.carbonData[currentYear];
     this.diameter = this.diameter * this.scale;
-    fill(11, 39, 55, 99);
+    selected == this.name ? fill("#89A79A") : fill(11, 39, 55, 99);
     noStroke();
     circle(this.x, this.y, this.diameter);
     noFill();
@@ -417,8 +428,8 @@ class Atmosphere {
     for (let i = 0; i < this.chartData.strokeWeight.length; i++) {
       let diameter = this.chartData.carbon[i] * this.scale
       strokeWeight(this.chartData.strokeWeight[i]);
-      arc(0, 0, diameter, diameter, PI + angle + this.chartData.tempWidth[i], angle - this.chartData.ppmWidth[i]);
-      arc(0, 0, diameter, diameter, angle + this.chartData.ppmWidth[i], angle - PI - this.chartData.tempWidth[i]);
+      arc(0, 0, diameter, diameter, PI + angle + this.chartData.tempWidth[i] + 0.1, angle - this.chartData.ppmWidth[i]);
+      arc(0, 0, diameter, diameter, angle + this.chartData.ppmWidth[i], angle - PI - this.chartData.tempWidth[i] - 0.08);
     }
     pop();
 
@@ -446,7 +457,7 @@ class Atmosphere {
         -transX,
         -transY,
         "+" + this.chartData.temp[i] + " °C",
-        25,
+        36,
         255,
         CENTER,
         -angle
@@ -470,6 +481,11 @@ class Atmosphere {
     if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
       currentInfoBox.title = this.name;
       currentInfoBox.description = this.description;
+      currentInfoBox.background = 1;
+      selected = this.name;
+      return 1;
+    } else {
+      return 0;
     }
   }
 }
@@ -516,17 +532,28 @@ class FluxPoint {
 // INFO BOX
 // --------
 class InfoBox {
-  constructor(title, description) {
+  constructor(title, description, background = 0) {
     this.title = title;
     this.description = description;
+    this.background = background;
   }
 
-  changeText(title, description) {
+  changeText(title, description, background = 0) {
     this.title = title;
     this.description = description;
+    this.background = background;
   }
 
   display() {
+    let coords = [2830, 900];
+    
+    if (this.background) {
+      noStroke();
+      fill("#89A79A");
+      rect(2830, 1490 - 2 * fontsize, 900, 540, 50);
+      coords = [2830 + 30, 900 - 30];
+    }
+    
     //Title
     push();
     textSize(40);
@@ -534,7 +561,7 @@ class InfoBox {
     noStroke();
     fill(255);
     textWrap(WORD);
-    text(this.title, 2830, 1490, 850);
+    text(this.title, coords[0], 1490, coords[1]);
     pop();
     //Description
     push();
@@ -543,7 +570,7 @@ class InfoBox {
     noStroke();
     fill(255);
     textWrap(WORD);
-    text(this.description, 2830, 1540, 850);
+    text(this.description, coords[0], 1540, coords[1]);
     pop();
   }
 }
@@ -602,7 +629,7 @@ class TitleBox {
 
     // draw boxes
     line(this.x + 25, transY, this.x + this.width - 25, transY);
-    line(this.x + this.width * 0.5, this.y + this.height * 0.5, this.x + this.width * 0.5, this.y + this.height);
+    line(this.x + this.width * 0.5, this.y + this.height * 0.5, this.x + this.width * 0.5, this.y + this.height - 15);
     /*rect(this.x, this.y, this.width, this.height, 50);
     rect(this.x, transY, this.width * 0.5, this.height * 0.5, 0, 0, 0, 50);
     rect(
@@ -629,14 +656,14 @@ class TitleBox {
     );
 
     this.drawOption(
-      this.x + this.width * 0.25,
-      this.y + this.height * 0.7,
+      this.x + this.width * 0.22,
+      this.y + this.height * 0.75,
       this.option1
     );
 
     this.drawOption(
-      this.x + this.width * 0.75,
-      this.y + this.height * 0.7,
+      this.x + this.width * 0.81,
+      this.y + this.height * 0.75,
       this.option2
     );
   }
@@ -644,6 +671,20 @@ class TitleBox {
   drawOption(x, y, option) {
     let c = option == this.selected ? color(255, 255, 255, 50) : 255;
     drawText(x, y, option, this.textsize, c);
+  }
+
+  clicked() {
+    if (dist(mouseX, mouseY, this.x + this.width * 0.25, this.y + this.height * 0.7) < 100) {
+      currentInfoBox.changeText("THE SLOW CARBON CYCLE", "CO2 is water soluble. When dissolved in water, it forms a weak acid. As rain, this acid eats away at rocks, and rivers wash everything into the ocean. In the ocean, chemical and biological processes combine those remnants into sediments which sink to the floor, from where tectonics either return them to the surface to be eroded or pull them down to be melted from the heat and pressure. Both options release the CO2 back to the atmosphere. A small amount of organic carbon also gets encased in mud, from where tectonics pull it down, where under heat and pressure, it turns into fossils.");
+      selected = "";
+      return 1;
+    } else if (dist(mouseX, mouseY, this.x + this.width * 0.75, this.y + this.height * 0.7) < 100) {
+      currentInfoBox.changeText("THE FAST CARBON CYCLE", "Plants as well as phytoplankton can absorb carbon dioxide using photosynthesis. That way, they store energy from the sun in energy-rich molecules. These organisms then either get consumed or die and decompose (which is being consumed by tiny microbes). This process releases the fixed carbon dioxide back into the atmosphere. In a year, about ten to a hundred times the carbon that humans emit from fossil fuels moves through this cycle.");
+      selected = "";
+      return 1;
+    } else {
+      return 0;
+    }
   }
 }
 
@@ -686,6 +727,9 @@ class Timeline {
       index = constrain(index, 0, this.dates.length - 1);
       currentYear = index;
       year_slider.value(index);
+      return 1;
+    } else {
+      return 0;
     }
   }
 
@@ -798,11 +842,18 @@ function drawText(
 
 // Check if one of the listed objects is clicked
 function mousePressed() {
-  reservoirOcean.clicked();
-  reservoirTerrestial.clicked();
-  reservoirFossil.clicked();
-  reservoirAtmosphere.clicked();
-  timeline.clicked();
+  let somethingSelected =
+    reservoirOcean.clicked() ||
+    reservoirTerrestial.clicked() ||
+    reservoirFossil.clicked() ||
+    reservoirAtmosphere.clicked() ||
+    timeline.clicked() ||
+    titleBox.clicked();
+
+  if (!somethingSelected) {
+    selected = "";
+    currentInfoBox.changeText("THE FAST CARBON CYCLE", "Plants as well as phytoplankton can absorb carbon dioxide using photosynthesis. That way, they store energy from the sun in energy-rich molecules. These organisms then either get consumed or die and decompose (which is being consumed by tiny microbes). This process releases the fixed carbon dioxide back into the atmosphere. In a year, about ten to a hundred times the carbon that humans emit from fossil fuels moves through this cycle.");
+  }
 }
 
 function addForwardFluxPoints() {
@@ -964,7 +1015,7 @@ function addBackwardFluxPoints() {
 
 function addConstantFlux() {
   let randomFactor = 100;
-  if (frameCount % 24 == 0) {
+  if (frameCount % 18 == 0) {
     FluxPointList.push(
       new FluxPoint(
         reservoirTerrestial.x,
@@ -975,18 +1026,21 @@ function addConstantFlux() {
     );
     FluxPointList.push(
       new FluxPoint(
-        reservoirOcean.x,
-        reservoirOcean.y,
-        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
-        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
-      )
-    );
-    FluxPointList.push(
-      new FluxPoint(
         reservoirAtmosphere.x,
         reservoirAtmosphere.y,
         reservoirTerrestial.x + random(-randomFactor, randomFactor),
         reservoirTerrestial.y + random(-randomFactor, randomFactor)
+      )
+    );
+
+  }
+  if (frameCount % 24 == 0) {
+    FluxPointList.push(
+      new FluxPoint(
+        reservoirOcean.x,
+        reservoirOcean.y,
+        reservoirAtmosphere.x + random(-randomFactor, randomFactor),
+        reservoirAtmosphere.y + random(-randomFactor, randomFactor)
       )
     );
     FluxPointList.push(
