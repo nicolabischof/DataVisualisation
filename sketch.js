@@ -715,7 +715,10 @@ class Timeline {
         -barHeight
       );
       if(i == currentYear){
+        push();
+        textFont(fontRegular);
         drawText(this.x + (this.dates.length - i) * this.memberSpace,this.y-barHeight-10,"+ " + fossil_emission_total[currentYear]+ " gtC/y",30,color(255,225,116),LEFT,-HALF_PI);
+        pop();
       }
     }
   }
@@ -734,14 +737,18 @@ class Timeline {
       color(255, 225, 116),
       LEFT
     );
+    push();
+    textFont(fontRegular);
     drawText(
-      textX,
+      textX+15,
       this.y - bigText,
-      "Fossil Emissions",
+      "FOSSIL EMISSIONS",
       smallText,
       color(255, 225, 116),
-      LEFT
+      LEFT,
+      -HALF_PI
     );
+    pop();
   }
 }
 
