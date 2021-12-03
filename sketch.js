@@ -349,6 +349,7 @@ class Reservoir {
     if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
       currentInfoBox.title = this.name;
       currentInfoBox.description = this.description;
+      currentInfoBox.background = 1;
       selected = this.name;
       return 1;
     } else {
@@ -480,6 +481,7 @@ class Atmosphere {
     if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
       currentInfoBox.title = this.name;
       currentInfoBox.description = this.description;
+      currentInfoBox.background = 1;
       selected = this.name;
       return 1;
     } else {
@@ -530,17 +532,25 @@ class FluxPoint {
 // INFO BOX
 // --------
 class InfoBox {
-  constructor(title, description) {
+  constructor(title, description, background = 0) {
     this.title = title;
     this.description = description;
+    this.background = background;
   }
 
-  changeText(title, description) {
+  changeText(title, description, background = 0) {
     this.title = title;
     this.description = description;
+    this.background = background;
   }
 
   display() {
+    if (this.background) {
+      noStroke();
+      fill("#89A79A");
+      rect(2830, 1490 - 2 * fontsize, 900, 540, 50);
+    }
+    
     //Title
     push();
     textSize(40);
@@ -548,7 +558,7 @@ class InfoBox {
     noStroke();
     fill(255);
     textWrap(WORD);
-    text(this.title, 2830, 1490, 850);
+    text(this.title, 2830 + 30, 1490, 900 - 30);
     pop();
     //Description
     push();
@@ -557,7 +567,7 @@ class InfoBox {
     noStroke();
     fill(255);
     textWrap(WORD);
-    text(this.description, 2830, 1540, 850);
+    text(this.description, 2830 + 30, 1540, 900 - 30);
     pop();
   }
 }
@@ -663,9 +673,11 @@ class TitleBox {
   clicked() {
     if (dist(mouseX, mouseY, this.x + this.width * 0.25, this.y + this.height * 0.7) < 100) {
       currentInfoBox.changeText("THE SLOW CARBON CYCLE", "CO2 is water soluble. When dissolved in water, it forms a weak acid. As rain, this acid eats away at rocks, and rivers wash everything into the ocean. In the ocean, chemical and biological processes combine those remnants into sediments which sink to the floor, from where tectonics either return them to the surface to be eroded or pull them down to be melted from the heat and pressure. Both options release the CO2 back to the atmosphere. A small amount of organic carbon also gets encased in mud, from where tectonics pull it down, where under heat and pressure, it turns into fossils.");
+      selected = "";
       return 1;
     } else if (dist(mouseX, mouseY, this.x + this.width * 0.75, this.y + this.height * 0.7) < 100) {
       currentInfoBox.changeText("THE FAST CARBON CYCLE", "Plants as well as phytoplankton can absorb carbon dioxide using photosynthesis. That way, they store energy from the sun in energy-rich molecules. These organisms then either get consumed or die and decompose (which is being consumed by tiny microbes). This process releases the fixed carbon dioxide back into the atmosphere. In a year, about ten to a hundred times the carbon that humans emit from fossil fuels moves through this cycle.");
+      selected = "";
       return 1;
     } else {
       return 0;
