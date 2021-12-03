@@ -545,10 +545,13 @@ class InfoBox {
   }
 
   display() {
+    let coords = [2830, 900];
+    
     if (this.background) {
       noStroke();
       fill("#89A79A");
       rect(2830, 1490 - 2 * fontsize, 900, 540, 50);
+      coords = [2830 + 30, 900 - 30];
     }
     
     //Title
@@ -558,7 +561,7 @@ class InfoBox {
     noStroke();
     fill(255);
     textWrap(WORD);
-    text(this.title, 2830 + 30, 1490, 900 - 30);
+    text(this.title, coords[0], 1490, coords[1]);
     pop();
     //Description
     push();
@@ -567,7 +570,7 @@ class InfoBox {
     noStroke();
     fill(255);
     textWrap(WORD);
-    text(this.description, 2830 + 30, 1540, 900 - 30);
+    text(this.description, coords[0], 1540, coords[1]);
     pop();
   }
 }
