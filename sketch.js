@@ -56,6 +56,7 @@ let res_permafrost;
 // GLOBAL VARIABLES
 // ----------------
 let currentYear;
+let selected = "";
 let currentInfoBox;
 let currentSliderValue;
 let oldSliderValue;
@@ -292,7 +293,7 @@ class Reservoir {
     this.diameter = this.data[currentYear];
     this.diameter = this.diameter * this.scale;
     push();
-    fill(11, 39, 55, 99);
+    selected == this.name ? fill("#89A79A") : fill(11, 39, 55, 99);
     noStroke();
     circle(this.x, this.y, this.diameter);
     stroke(255, 225, 116);
@@ -307,7 +308,7 @@ class Reservoir {
     circle(this.x, this.y, this.diameter);
     pop();
 
-    
+
     if (this.name != "FOSSILS") {
       push();
       stroke(255, 255, 255, 50);
@@ -329,25 +330,29 @@ class Reservoir {
     }
 
     fill(255);
-    if(this.name == "OCEAN"){
+    if (this.name == "OCEAN") {
       drawText(
         this.x,
         this.y,
         this.name + "\n" + round(this.data[currentYear], 1) + " Gigaton Carbon"
       );
-    }else{
-    drawText(
-      this.x,
-      this.y,
-      this.name + "\n" + round(this.data[currentYear], 1) + " gtC"
-    );
-  }
+    } else {
+      drawText(
+        this.x,
+        this.y,
+        this.name + "\n" + round(this.data[currentYear], 1) + " gtC"
+      );
+    }
   }
 
   clicked() {
     if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
       currentInfoBox.title = this.name;
       currentInfoBox.description = this.description;
+      selected = this.name;
+      return 1;
+    } else {
+      return 0;
     }
   }
 }
@@ -385,7 +390,7 @@ class Atmosphere {
   display() {
     this.diameter = this.carbonData[currentYear];
     this.diameter = this.diameter * this.scale;
-    fill(11, 39, 55, 99);
+    selected == this.name ? fill("#89A79A") : fill(11, 39, 55, 99);
     noStroke();
     circle(this.x, this.y, this.diameter);
     noFill();
@@ -422,8 +427,8 @@ class Atmosphere {
     for (let i = 0; i < this.chartData.strokeWeight.length; i++) {
       let diameter = this.chartData.carbon[i] * this.scale
       strokeWeight(this.chartData.strokeWeight[i]);
-      arc(0, 0, diameter, diameter, PI + angle + this.chartData.tempWidth[i]+0.1, angle - this.chartData.ppmWidth[i]);
-      arc(0, 0, diameter, diameter, angle + this.chartData.ppmWidth[i], angle - PI - this.chartData.tempWidth[i]-0.08);
+      arc(0, 0, diameter, diameter, PI + angle + this.chartData.tempWidth[i] + 0.1, angle - this.chartData.ppmWidth[i]);
+      arc(0, 0, diameter, diameter, angle + this.chartData.ppmWidth[i], angle - PI - this.chartData.tempWidth[i] - 0.08);
     }
     pop();
 
@@ -475,6 +480,10 @@ class Atmosphere {
     if (dist(mouseX, mouseY, this.x, this.y) < this.diameter / 2) {
       currentInfoBox.title = this.name;
       currentInfoBox.description = this.description;
+      selected = this.name;
+      return 1;
+    } else {
+      return 0;
     }
   }
 }
@@ -607,7 +616,7 @@ class TitleBox {
 
     // draw boxes
     line(this.x + 25, transY, this.x + this.width - 25, transY);
-    line(this.x + this.width * 0.5, this.y + this.height * 0.5, this.x + this.width * 0.5, this.y + this.height-15);
+    line(this.x + this.width * 0.5, this.y + this.height * 0.5, this.x + this.width * 0.5, this.y + this.height - 15);
     /*rect(this.x, this.y, this.width, this.height, 50);
     rect(this.x, transY, this.width * 0.5, this.height * 0.5, 0, 0, 0, 50);
     rect(
@@ -651,12 +660,15 @@ class TitleBox {
     drawText(x, y, option, this.textsize, c);
   }
 
-  clicked(){
+  clicked() {
     if (dist(mouseX, mouseY, this.x + this.width * 0.25, this.y + this.height * 0.7) < 100) {
-      currentInfoBox.changeText("THE SLOW CARBON CYCLE","CO2 is water soluble. When dissolved in water, it forms a weak acid. As rain, this acid eats away at rocks, and rivers wash everything into the ocean. In the ocean, chemical and biological processes combine those remnants into sediments which sink to the floor, from where tectonics either return them to the surface to be eroded or pull them down to be melted from the heat and pressure. Both options release the CO2 back to the atmosphere. A small amount of organic carbon also gets encased in mud, from where tectonics pull it down, where under heat and pressure, it turns into fossils.");
-    }
-    if (dist(mouseX, mouseY, this.x + this.width * 0.75, this.y + this.height * 0.7) < 100) {
-      currentInfoBox.changeText("THE FAST CARBON CYCLE","Plants as well as phytoplankton can absorb carbon dioxide using photosynthesis. That way, they store energy from the sun in energy-rich molecules. These organisms then either get consumed or die and decompose (which is being consumed by tiny microbes). This process releases the fixed carbon dioxide back into the atmosphere. In a year, about ten to a hundred times the carbon that humans emit from fossil fuels moves through this cycle.");
+      currentInfoBox.changeText("THE SLOW CARBON CYCLE", "CO2 is water soluble. When dissolved in water, it forms a weak acid. As rain, this acid eats away at rocks, and rivers wash everything into the ocean. In the ocean, chemical and biological processes combine those remnants into sediments which sink to the floor, from where tectonics either return them to the surface to be eroded or pull them down to be melted from the heat and pressure. Both options release the CO2 back to the atmosphere. A small amount of organic carbon also gets encased in mud, from where tectonics pull it down, where under heat and pressure, it turns into fossils.");
+      return 1;
+    } else if (dist(mouseX, mouseY, this.x + this.width * 0.75, this.y + this.height * 0.7) < 100) {
+      currentInfoBox.changeText("THE FAST CARBON CYCLE", "Plants as well as phytoplankton can absorb carbon dioxide using photosynthesis. That way, they store energy from the sun in energy-rich molecules. These organisms then either get consumed or die and decompose (which is being consumed by tiny microbes). This process releases the fixed carbon dioxide back into the atmosphere. In a year, about ten to a hundred times the carbon that humans emit from fossil fuels moves through this cycle.");
+      return 1;
+    } else {
+      return 0;
     }
   }
 }
@@ -700,6 +712,9 @@ class Timeline {
       index = constrain(index, 0, this.dates.length - 1);
       currentYear = index;
       year_slider.value(index);
+      return 1;
+    } else {
+      return 0;
     }
   }
 
@@ -728,8 +743,8 @@ class Timeline {
         i == currentYear ? this.selectedBarWidth : this.barWidth,
         -barHeight
       );
-      if(i == currentYear){
-        drawText(this.x + (this.dates.length - i) * this.memberSpace,this.y-barHeight-10,"+ " + fossil_emission_total[currentYear]+ " gtC/y",30,color(255,225,116),LEFT,-HALF_PI);
+      if (i == currentYear) {
+        drawText(this.x + (this.dates.length - i) * this.memberSpace, this.y - barHeight - 10, "+ " + fossil_emission_total[currentYear] + " gtC/y", 30, color(255, 225, 116), LEFT, -HALF_PI);
       }
     }
   }
@@ -805,12 +820,18 @@ function drawText(
 
 // Check if one of the listed objects is clicked
 function mousePressed() {
-  reservoirOcean.clicked();
-  reservoirTerrestial.clicked();
-  reservoirFossil.clicked();
-  reservoirAtmosphere.clicked();
-  timeline.clicked();
-  titleBox.clicked();
+  let somethingSelected =
+    reservoirOcean.clicked() ||
+    reservoirTerrestial.clicked() ||
+    reservoirFossil.clicked() ||
+    reservoirAtmosphere.clicked() ||
+    timeline.clicked() ||
+    titleBox.clicked();
+
+  if (!somethingSelected) {
+    selected = "";
+    currentInfoBox.changeText("THE FAST CARBON CYCLE", "Plants as well as phytoplankton can absorb carbon dioxide using photosynthesis. That way, they store energy from the sun in energy-rich molecules. These organisms then either get consumed or die and decompose (which is being consumed by tiny microbes). This process releases the fixed carbon dioxide back into the atmosphere. In a year, about ten to a hundred times the carbon that humans emit from fossil fuels moves through this cycle.");
+  }
 }
 
 function addForwardFluxPoints() {
@@ -989,7 +1010,7 @@ function addConstantFlux() {
         reservoirTerrestial.y + random(-randomFactor, randomFactor)
       )
     );
-    
+
   }
   if (frameCount % 24 == 0) {
     FluxPointList.push(
